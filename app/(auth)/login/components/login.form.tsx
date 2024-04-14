@@ -1,5 +1,4 @@
 'use client';
-
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -8,6 +7,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
+import { login } from '@/api/auth';
+import { decodeToken, saveToken } from '@/utils/sessionToken';
+import { URL_DASHBOARD } from '@/constants/url';
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -15,17 +17,26 @@ export default function LoginForm() {
   const form = useForm<LoginSchemaType>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
-      username: '',
-      password: '',
+      username: 'linh1',
+      password: '123123',
     },
   });
 
-  const handleShowHidePassword = () => {
+  const handleShowHidePassword = (e: any) => {
+    e.preventDefault();
     setShowPassword(!showPassword);
   };
 
   const onSubmit = async (values: LoginSchemaType) => {
-    console.log(values);
+    try {
+      const { accessToken, refreshToken, status } = await login(values);
+      if (status === 200) {
+        await saveToken(accessToken, refreshToken);
+        window.location.href = URL_DASHBOARD;
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -45,9 +56,9 @@ export default function LoginForm() {
                   name='username'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Tên đăng nhập:</FormLabel>
+                      <FormLabel className='text-gray-800'>Tên đăng nhập:</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input className='text-gray-800' {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -58,10 +69,10 @@ export default function LoginForm() {
                   name='password'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Mật khẩu:</FormLabel>
+                      <FormLabel className='text-gray-800'>Mật khẩu:</FormLabel>
                       <FormControl>
                         <div className='relative'>
-                          <Input type={showPassword ? 'text' : 'password'} {...field} />
+                          <Input type={showPassword ? 'text' : 'password'} className='text-gray-800' {...field} />
                           <button className='absolute top-1/2 right-3 translate-y-[-50%] text-gray-400' onClick={handleShowHidePassword}>
                             {showPassword ? <EyeOff /> : <Eye />}
                           </button>
@@ -74,7 +85,7 @@ export default function LoginForm() {
               </div>
 
               <div className='grid'>
-                <Button type='submit'>Lưu</Button>
+                <Button type='submit'>Đăng nhập</Button>
               </div>
             </form>
           </Form>

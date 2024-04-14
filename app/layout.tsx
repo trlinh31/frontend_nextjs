@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: 'Dashboard',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -19,7 +19,7 @@ export default function RootLayout({
     <html lang='en' suppressHydrationWarning>
       <body className={inter.className}>
         <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
-          <div className='w-screen h-screen overflow-hidden'>{children}</div>
+          {children}
           <Toaster />
         </ThemeProvider>
       </body>

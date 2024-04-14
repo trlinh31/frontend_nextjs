@@ -1,6 +1,7 @@
 'use server';
 import { revalidateTag } from 'next/cache';
 import { ProductSchemaType } from '@/lib/form-schema';
+import { cookies } from 'next/headers';
 
 const BASE_URL = process.env.NEXT_PUBLIC_URL_BACKEND;
 
@@ -12,10 +13,12 @@ export const getAllProducts = async (page = 0) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${cookies().get('accessToken')?.value}`,
       },
       next: { tags: ['products'] },
       cache: 'no-store',
     });
+
     const { content, totalPages } = await response.json();
     return { data: content, totalPages };
   } catch (error) {
@@ -24,14 +27,15 @@ export const getAllProducts = async (page = 0) => {
   }
 };
 
-export const getProductDetails = async (productId: string) => {
-  const url = `${BASE_URL}/product/update/${productId}`;
+export const getProductDetails = async (id: string) => {
+  const url = `${BASE_URL}/product/update/${id}`;
 
   try {
     const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${cookies().get('accessToken')?.value}`,
       },
       cache: 'no-store',
     });
@@ -40,20 +44,43 @@ export const getProductDetails = async (productId: string) => {
     return { data: product };
   } catch (error) {
     console.error('Failed to fetch data', error);
-    return null;
+    return { data: null };
   }
 };
 
-export const createOrUpdateProduct = async (product: ProductSchemaType) => {
-  const url = `${BASE_URL}/product/save`;
+export const getProductsByName = async (keyword: string) => {
+  const url = `${BASE_URL}/product/api/list?keyword=${keyword}`;
+
   try {
-    await fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(product),
+    const response = await fetch(url, {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${cookies().get('accessToken')?.value}`,
+      },
+      cache: 'no-store',
+    });
+
+    const product = await response.json();
+    return { data: product };
+  } catch (error) {
+    console.error('Failed to fetch data', error);
+    return { data: null };
+  }
+};
+
+export const createOrUpdateProduct = async (data: ProductSchemaType) => {
+  const url = `${BASE_URL}/product/save`;
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${cookies().get('accessToken')?.value}`,
       },
     });
+    return response.status;
   } catch (error) {
     console.error(error);
   } finally {
@@ -64,12 +91,14 @@ export const createOrUpdateProduct = async (product: ProductSchemaType) => {
 export const deleteProduct = async (id: string) => {
   const url = `${BASE_URL}/product/delete/${id}`;
   try {
-    await fetch(url, {
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${cookies().get('accessToken')?.value}`,
       },
     });
+    return response.status;
   } catch (error) {
     console.error(error);
   } finally {

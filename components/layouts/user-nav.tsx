@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -10,8 +11,17 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
+import { deleteToken } from '@/utils/sessionToken';
+import { useRouter } from 'next/navigation';
 
-export default function UserNav() {
+export default function UserNav({ user }: any) {
+  const router = useRouter();
+  const handleLogout = async () => {
+    await deleteToken();
+    router.refresh();
+    router.push('/login');
+  };
+
   return (
     <>
       <DropdownMenu>
@@ -26,8 +36,8 @@ export default function UserNav() {
         <DropdownMenuContent className='w-56' align='end' forceMount>
           <DropdownMenuLabel className='font-normal'>
             <div className='flex flex-col space-y-1'>
-              <p className='text-sm font-medium leading-none'>Admin</p>
-              <p className='text-xs leading-none text-muted-foreground'>admin@gmail.com</p>
+              <p className='text-sm font-medium leading-none'>Username</p>
+              <p className='text-xs leading-none text-muted-foreground'>{user?.sub}</p>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
@@ -36,7 +46,7 @@ export default function UserNav() {
             <DropdownMenuItem>Cài đặt</DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Đăng xuất</DropdownMenuItem>
+          <DropdownMenuItem onClick={handleLogout}>Đăng xuất</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </>

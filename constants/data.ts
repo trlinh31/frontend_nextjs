@@ -1,6 +1,15 @@
-import { URL_DASHBOARD, URL_SHOW_CATEGORY, URL_SHOW_CUSTOMER, URL_SHOW_FEEDBACK, URL_SHOW_PRODUCT, URL_SHOW_USER } from '@/constants/url';
+import {
+  URL_DASHBOARD,
+  URL_SHOW_CATEGORY,
+  URL_SHOW_CUSTOMER,
+  URL_SHOW_FEEDBACK,
+  URL_SHOW_GROUP,
+  URL_SHOW_PRODUCT,
+  URL_SHOW_ROLE,
+  URL_SHOW_USER,
+} from '@/constants/url';
 import { NavItem } from '@/types';
-import { Home, UsersRound, User, Shirt, ShoppingBag, Store, LayoutGrid, MessageSquareMore, KeyRound } from 'lucide-react';
+import { Home, UsersRound, User, Users, Shirt, ShoppingBag, Store, LayoutGrid, MessageSquareMore, KeyRound, Key } from 'lucide-react';
 
 export const navItems: NavItem[] = [
   {
@@ -27,13 +36,11 @@ export const navItems: NavItem[] = [
     title: 'Khách hàng',
     href: URL_SHOW_CUSTOMER,
     icon: UsersRound,
-    disabled: true,
   },
   {
     title: 'Đơn hàng',
-    href: '/admin/don-hang',
+    href: '/admin/transaction',
     icon: ShoppingBag,
-    disabled: true,
   },
   {
     title: 'Kho hàng',
@@ -45,5 +52,16 @@ export const navItems: NavItem[] = [
     title: 'Tài khoản',
     href: URL_SHOW_USER,
     icon: User,
+    disabled: true,
+  },
+  {
+    title: 'Vai trò',
+    href: URL_SHOW_ROLE,
+    icon: KeyRound,
+  },
+  {
+    title: 'Nhóm tài khoản',
+    href: URL_SHOW_GROUP,
+    icon: Users,
   },
 ];

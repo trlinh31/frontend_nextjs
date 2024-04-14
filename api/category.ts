@@ -1,6 +1,7 @@
 'use server';
 import { CategorySchemaType } from '@/lib/form-schema';
 import { revalidateTag } from 'next/cache';
+import { cookies } from 'next/headers';
 
 const BASE_URL = process.env.NEXT_PUBLIC_URL_BACKEND;
 
@@ -9,9 +10,10 @@ export const getAllCategories = async (page = 0) => {
 
   try {
     const response = await fetch(url, {
-      method: 'GET',
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${cookies().get('accessToken')?.value}`,
       },
       next: { tags: ['categories'] },
       cache: 'no-store',
@@ -24,16 +26,38 @@ export const getAllCategories = async (page = 0) => {
   }
 };
 
-export const getAllCategoryParents = async () => {
-  const url = `${BASE_URL}/category/listParents`;
+export const getAllCategoriesAndParent = async () => {
+  const url = `${BASE_URL}/category/list`;
+
   try {
-    const res = await fetch(url, {
+    const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${cookies().get('accessToken')?.value}`,
+      },
+      next: { tags: ['categories'] },
+      cache: 'no-store',
+    });
+    const categories = await response.json();
+    return { data: categories };
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    return { data: null };
+  }
+};
+
+export const getAllCategoryParents = async () => {
+  const url = `${BASE_URL}/category/listParents`;
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${cookies().get('accessToken')?.value}`,
       },
     });
-    return await res.json();
+    return await response.json();
   } catch (error) {
     console.error('Error fetching data:', error);
     return null;
@@ -43,13 +67,14 @@ export const getAllCategoryParents = async () => {
 export const getDetailCategory = async (id: string) => {
   const url = `${BASE_URL}/category/update/${id}`;
   try {
-    const res = await fetch(url, {
+    const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${cookies().get('accessToken')?.value}`,
       },
     });
-    return await res.json();
+    return await response.json();
   } catch (error) {
     console.error('Error fetching data:', error);
     return null;
@@ -59,14 +84,15 @@ export const getDetailCategory = async (id: string) => {
 export const createOrUpdateCategory = async (data: CategorySchemaType) => {
   const url = `${BASE_URL}/category/save`;
   try {
-    const res = await fetch(url, {
+    const response = await fetch(url, {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${cookies().get('accessToken')?.value}`,
       },
     });
-    return await res.json();
+    return response.status;
   } catch (error) {
     console.log(error);
   } finally {
@@ -77,12 +103,14 @@ export const createOrUpdateCategory = async (data: CategorySchemaType) => {
 export const deleteCategory = async (id: string) => {
   const url = `${BASE_URL}/category/delete/${id}`;
   try {
-    await fetch(url, {
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${cookies().get('accessToken')?.value}`,
       },
     });
+    return response.status;
   } catch (error) {
     console.log(error);
   } finally {

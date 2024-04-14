@@ -2,15 +2,6 @@ import { LucideIcon } from 'lucide-react';
 
 export type IconType = LucideIcon;
 
-// export type Customer = {
-//   id: string;
-//   name: string;
-//   avatar: string;
-//   email: string;
-//   phone: string;
-//   address: string;
-// };
-
 export interface NavItem {
   title: string;
   href?: string;
