@@ -11,12 +11,16 @@ import { useRouter } from 'next/navigation';
 import { URL_SHOW_USER } from '@/constants/url';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { User } from '@/types/user.type';
+import { Group } from '@/types/group.type';
+import { createOrUpdateUser } from '@/api/user';
+import { useState } from 'react';
 
 type FormPropsType = {
   initUser?: User | null;
+  groups: Group[] | [];
 };
 
-export default function UserForm({ initUser }: FormPropsType) {
+export default function UserForm({ initUser, groups }: FormPropsType) {
   const { toast } = useToast();
   const router = useRouter();
 
@@ -24,25 +28,31 @@ export default function UserForm({ initUser }: FormPropsType) {
     resolver: zodResolver(UserSchema),
     defaultValues: {
       id: initUser?.id.toString() ?? '',
-      fullname: initUser?.fullname ?? '',
+      fullName: initUser?.fullName ?? '',
       username: initUser?.username ?? '',
       password: initUser?.password ?? '',
       email: initUser?.email ?? '',
       address: initUser?.address ?? '',
-      roles: initUser?.roles ?? '',
+      group: {
+        id: initUser?.group?.id.toString() ?? '',
+      },
     },
   });
 
-  const onSubmit = async (formData: UserSchemaType) => {
+  const onSubmit = async (data: UserSchemaType) => {
+    console.log(data);
+
     const successMessage = initUser ? 'Cập nhật tài khoản thành công' : 'Thêm mới tài khoản thành công';
-    // try {
-    //   await createOrUpdateCategory(formData);
-    //   toast({ description: successMessage });
-    //   router.refresh();
-    //   router.push(URL_SHOW_CATEGORY);
-    // } catch {
-    //   toast({ description: 'Thêm khách hàng thất bại' });
-    // }
+    try {
+      const res = await createOrUpdateUser(data);
+      if (res === 200) {
+        toast({ description: successMessage });
+        router.refresh();
+        router.push(URL_SHOW_USER);
+      }
+    } catch {
+      toast({ description: 'Thêm tài khoản thất bại' });
+    }
   };
 
   return (
@@ -58,7 +68,7 @@ export default function UserForm({ initUser }: FormPropsType) {
             <div className='grid grid-cols-2 gap-4'>
               <FormField
                 control={form.control}
-                name='fullname'
+                name='fullName'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Họ và tên:</FormLabel>
@@ -115,7 +125,7 @@ export default function UserForm({ initUser }: FormPropsType) {
                   <FormItem>
                     <FormLabel>Mật khẩu:</FormLabel>
                     <FormControl>
-                      <Input type='password' {...field} />
+                      <Input type='password' {...field} disabled={initUser ? true : false} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -123,20 +133,22 @@ export default function UserForm({ initUser }: FormPropsType) {
               />
               <FormField
                 control={form.control}
-                name='roles'
+                name='group.id'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Vai trò:</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value.toString()}>
+                    <FormLabel>Nhóm tài khoản:</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder='Chọn vai trò' />
+                          <SelectValue placeholder='Chọn nhóm tài khoản' />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value='0'>Admin</SelectItem>
-                        <SelectItem value='1'>Nhân viên bán hàng</SelectItem>
-                        <SelectItem value='2'>Khách hàng</SelectItem>
+                        {groups?.map((item) => (
+                          <SelectItem key={item.id.toString()} value={item.id.toString()}>
+                            {item.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />

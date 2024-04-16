@@ -1,33 +1,31 @@
 'use client';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Product } from '@/types/product.type';
 import { MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
-import { URL_CREATE_USER } from '@/constants/url';
-import { useState } from 'react';
+import { URL_CREATE_USER, URL_UPDATE_USER } from '@/constants/url';
 import { useToast } from '@/components/ui/use-toast';
 import PaginationSection from '@/components/pagination';
 import { Button } from '@/components/ui/button';
+import { User } from '@/types/user.type';
+import { Badge } from '@/components/ui/badge';
+import { Role } from '@/types/role.type';
+import { useRouter } from 'next/navigation';
 
-type ProductPropType = {
-  products: Product[] | [];
+type propType = {
+  users: User[] | [];
   pagination: {
     currentPage: number;
     totalPage: number;
   };
 };
 
-const tableHeader = ['STT', 'Họ tên', 'Email', 'Số điện thoại', 'Địa chỉ', 'Nhóm', ''];
+const tableHeader = ['STT', 'Họ tên', 'Email', 'Địa chỉ', 'Nhóm', 'Vai trò', ''];
 
-export default function UserTable() {
+export default function UserTable({ users, pagination }: propType) {
   const { toast } = useToast();
-  const [isOpenModal, setOpenModal] = useState<boolean>(false);
-  // const { currentPage, totalPage } = pagination;
-
-  const handleShowModal = () => {
-    setOpenModal(!isOpenModal);
-  };
+  const router = useRouter();
+  const { currentPage, totalPage } = pagination;
 
   return (
     <>
@@ -47,29 +45,41 @@ export default function UserTable() {
           </TableRow>
         </TableHeader>
         <TableBody className='text-center'>
-          <TableRow>
-            <TableCell className='font-medium'>1</TableCell>
-            <TableCell>Linh Trần</TableCell>
-            <TableCell>admin@gmail.com</TableCell>
-            <TableCell>0912345678</TableCell>
-            <TableCell>Hà Nội</TableCell>
-            <TableCell>Quản trị viên</TableCell>
-            <TableCell className='w-[100px]'>
-              <DropdownMenu>
-                <DropdownMenuTrigger>
-                  <MoreHorizontal />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem>
-                    <DropdownMenuItem>Cập nhật</DropdownMenuItem>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </TableCell>
-          </TableRow>
+          {users?.map((user: User, index: number) => (
+            <TableRow key={user.id}>
+              <TableCell>{index + 1}</TableCell>
+              <TableCell>{user.fullName}</TableCell>
+              <TableCell>{user.email}</TableCell>
+              <TableCell>{user.address}</TableCell>
+              <TableCell>{user.group && <Badge>{user.group?.name}</Badge>}</TableCell>
+              <TableCell className='max-w-[300px]'>
+                {user.group && (
+                  <div className='flex flex-wrap items-center gap-2'>
+                    {user.group.roles.map((item: Role) => (
+                      <Badge key={item.id} variant={'outline'}>
+                        {item.name}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </TableCell>
+              <TableCell className='w-[100px]'>
+                <DropdownMenu>
+                  <DropdownMenuTrigger>
+                    <MoreHorizontal />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem asChild>
+                      <Link href={URL_UPDATE_USER + user.id}>Cập nhật</Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
-      {/* <PaginationSection totalPage={totalPage} currentPage={currentPage} /> */}
+      <PaginationSection totalPage={totalPage} currentPage={currentPage} />
     </>
   );
 }

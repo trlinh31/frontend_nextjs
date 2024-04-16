@@ -4,7 +4,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { URL_CREATE_GROUP, URL_CREATE_ROLE, URL_UPDATE_GROUP, URL_UPDATE_ROLE } from '@/constants/url';
+import { URL_CREATE_GROUP, URL_UPDATE_GROUP } from '@/constants/url';
 import { useToast } from '@/components/ui/use-toast';
 import { MoreHorizontal } from 'lucide-react';
 import { Group } from '@/types/group.type';

@@ -41,7 +41,7 @@ export default function CategoryForm({ initCategory, parentsCategory }: FormProp
         router.push(URL_SHOW_CATEGORY);
       }
     } catch {
-      toast({ description: 'Thêm khách hàng thất bại' });
+      toast({ description: 'Thêm danh mục thất bại' });
     }
   };
 

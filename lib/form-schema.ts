@@ -17,12 +17,14 @@ export const ProductSchema = z.object({
 
 export const UserSchema = z.object({
   id: z.string(),
-  fullname: z.string().min(1, { message: 'Vui lòng nhập họ và tên' }),
+  fullName: z.string().min(1, { message: 'Vui lòng nhập họ và tên' }),
   email: z.string().min(1, { message: 'Vui lòng nhập email' }).email({ message: 'Email không hợp lệ' }),
   address: z.string(),
   username: z.string().min(1, { message: 'Vui lòng nhập tên đăng nhập' }),
   password: z.string().min(6, { message: 'Mật khẩu phải có ít nhất 6 ký tự' }),
-  roles: z.string().min(1, { message: 'Vui lòng chọn vai trò của user' }),
+  group: z.object({
+    id: z.string().min(1, { message: 'Vui lòng chọn nhóm của user' }),
+  }),
 });
 
 export const RoleSchema = z.object({
@@ -30,23 +32,17 @@ export const RoleSchema = z.object({
   name: z.string().min(1, { message: 'Vui lòng nhập tên vai trò' }),
 });
 
-export type RoleSchemaType = z.TypeOf<typeof RoleSchema>;
-
 export const GroupSchema = z.object({
   id: z.string(),
   name: z.string().min(1, { message: 'Vui lòng nhập tên nhóm' }),
   roles: z.array(z.number()),
 });
 
-export type GroupSchemaType = z.TypeOf<typeof GroupSchema>;
-
 export const CategorySchema = z.object({
   id: z.string(),
   name: z.string().min(1, { message: 'Vui lòng nhập tên danh mục sản phẩm' }),
   parentsId: z.string(),
 });
-
-export type CategorySchemaType = z.TypeOf<typeof CategorySchema>;
 
 export const LoginSchema = z.object({
   username: z.string().min(1, { message: 'Vui lòng nhập tên người dùng' }),
@@ -115,6 +111,9 @@ export type ProductSchemaType = z.TypeOf<typeof ProductSchema>;
 export type UserSchemaType = z.TypeOf<typeof UserSchema>;
 export type LoginSchemaType = z.TypeOf<typeof LoginSchema>;
 export type RegisterSchemaType = z.TypeOf<typeof RegisterSchema>;
+export type RoleSchemaType = z.TypeOf<typeof RoleSchema>;
+export type CategorySchemaType = z.TypeOf<typeof CategorySchema>;
 export type CustomerSchemaType = z.TypeOf<typeof CustomerSchema>;
 export type TransactionSchemaType = z.TypeOf<typeof TransactionSchema>;
+export type GroupSchemaType = z.TypeOf<typeof GroupSchema>;
 export type StockSchemaType = z.TypeOf<typeof StockSchema>;

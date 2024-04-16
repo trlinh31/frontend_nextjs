@@ -18,7 +18,7 @@ import ProductModal from '@/app/admin/product/_components/product.modal';
 import { Category } from '@/types/category.type';
 import Badge from '@/components/badge';
 
-type ProductPropType = {
+type propType = {
   products: Product[] | [];
   pagination: {
     currentPage: number;
@@ -40,7 +40,7 @@ const tableHeader = [
   '',
 ];
 
-export default function ProductTable({ products, pagination }: ProductPropType) {
+export default function ProductTable({ products, pagination }: propType) {
   const { toast } = useToast();
   const router = useRouter();
   const [product, setProduct] = useState<Product | any>();

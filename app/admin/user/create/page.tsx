@@ -1,19 +1,16 @@
 import BreadCrumb from '@/components/breadcrumb';
-import { URL_SHOW_CATEGORY } from '@/constants/url';
-import { Category } from '@/types/category.type';
+import { URL_SHOW_USER } from '@/constants/url';
 import UserForm from '@/app/admin/user/_components/user.form';
+import { getAllGroups } from '@/api/group';
 
-type CategoryPropType = {
-  parentsCategory: Category[] | [];
-};
-
-const breadcrumbItem = { title: 'Tài khoản', link: URL_SHOW_CATEGORY, action: 'Thêm mới' };
+const breadcrumbItem = { title: 'Tài khoản', link: URL_SHOW_USER, action: 'Thêm mới' };
 
 export default async function UserCreate() {
+  const { data } = await getAllGroups();
   return (
     <>
       <BreadCrumb item={breadcrumbItem} />
-      <UserForm />
+      <UserForm groups={data} />
     </>
   );
 }
