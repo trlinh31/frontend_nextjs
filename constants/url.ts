@@ -39,3 +39,10 @@ export const URL_SHOW_TRANSACTION = '/admin/transaction';
 export const URL_CREATE_TRANSACTION = '/admin/transaction/create';
 export const URL_UPDATE_TRANSACTION = '/admin/transaction/edit/';
 export const URL_DELETE_TRANSACTION = '/admin/transaction/delete/';
+
+export const URL_SHOW_STOCK = '/admin/stock';
+export const URL_CREATE_STOCK = '/admin/stock/create';
+export const URL_UPDATE_STOCK = '/admin/stock/edit/';
+export const URL_DELETE_STOCK = '/admin/stock/delete/';
+
+export const CASHIER_PATH = ['/admin/dashboard', '/admin/transaction', '/admin/product']; //Path mà cashier có thể truy cập được

@@ -100,9 +100,21 @@ export const TransactionSchema = z.object({
   transactionDetails: z.array(TransactionDetailSchema),
 });
 
+export const StockSchema = z.object({
+  billInvoice: z.number(),
+  stockInDetails: z.object({
+    product: z.object({
+      id: z.string(),
+    }),
+    quantity: z.number(),
+    total: z.number(),
+  }),
+});
+
 export type ProductSchemaType = z.TypeOf<typeof ProductSchema>;
 export type UserSchemaType = z.TypeOf<typeof UserSchema>;
 export type LoginSchemaType = z.TypeOf<typeof LoginSchema>;
 export type RegisterSchemaType = z.TypeOf<typeof RegisterSchema>;
 export type CustomerSchemaType = z.TypeOf<typeof CustomerSchema>;
 export type TransactionSchemaType = z.TypeOf<typeof TransactionSchema>;
+export type StockSchemaType = z.TypeOf<typeof StockSchema>;

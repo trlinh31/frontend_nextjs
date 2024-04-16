@@ -2,8 +2,7 @@
 import { revalidateTag } from 'next/cache';
 import { RoleSchemaType } from '@/lib/form-schema';
 import { cookies } from 'next/headers';
-
-const BASE_URL = process.env.NEXT_PUBLIC_URL_BACKEND;
+import { BASE_URL } from '@/api';
 
 export const getAllRoles = async () => {
   const url = `${BASE_URL}/role/list`;

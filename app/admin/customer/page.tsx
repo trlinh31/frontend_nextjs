@@ -13,7 +13,7 @@ type paramsProps = {
   };
 };
 
-const breadcrumbItem = { title: 'Sản phẩm', link: URL_SHOW_PRODUCT };
+const breadcrumbItem = { title: 'Khách hàng', link: URL_SHOW_PRODUCT };
 
 export default async function ProductPage({ searchParams }: paramsProps) {
   let customers: Customer[] = [];

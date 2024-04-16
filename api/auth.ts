@@ -1,11 +1,9 @@
 'use server';
 import { LoginSchemaType } from '@/lib/form-schema';
-import { cookies } from 'next/headers';
-
-const BASE_URL = process.env.NEXT_PUBLIC_URL_AUTH_BACKEND;
+import { BASE_URL_AUTH } from '@/api';
 
 export const login = async (data: LoginSchemaType) => {
-  const url = `${BASE_URL}/authenticate`;
+  const url = `${BASE_URL_AUTH}/authenticate`;
   try {
     const response = await fetch(url, {
       method: 'POST',
@@ -23,7 +21,7 @@ export const login = async (data: LoginSchemaType) => {
 };
 
 export const slideToken = async (token: string) => {
-  const url = `${BASE_URL}/refresh-token`;
+  const url = `${BASE_URL_AUTH}/refresh-token`;
 
   try {
     const response = await fetch(url, {

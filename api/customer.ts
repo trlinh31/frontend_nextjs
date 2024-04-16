@@ -2,8 +2,7 @@
 import { revalidateTag } from 'next/cache';
 import { CustomerSchemaType } from '@/lib/form-schema';
 import { cookies } from 'next/headers';
-
-const BASE_URL = process.env.NEXT_PUBLIC_URL_BACKEND;
+import { BASE_URL } from '@/api';
 
 export const getAllCustomers = async (page = 0) => {
   const url = `${BASE_URL}/customer/list?page=${page}`;
@@ -37,14 +36,13 @@ export const getCustomerDetails = async (id: string) => {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${cookies().get('accessToken')?.value}`,
       },
-      cache: 'no-store',
     });
 
     const customer = await response.json();
     return { data: customer };
   } catch (error) {
     console.error('Failed to fetch data', error);
-    return null;
+    return { data: null };
   }
 };
 
@@ -82,5 +80,26 @@ export const deleteCustomer = async (id: string) => {
     console.error(error);
   } finally {
     revalidateTag('customers');
+  }
+};
+
+export const getCustomerByName = async (keyword: string) => {
+  const url = `${BASE_URL}/customer/api/list?keyword=${keyword}`;
+
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${cookies().get('accessToken')?.value}`,
+      },
+      cache: 'no-store',
+    });
+
+    const customer = await response.json();
+    return { data: customer };
+  } catch (error) {
+    console.error('Failed to fetch data', error);
+    return { data: null };
   }
 };

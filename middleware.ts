@@ -2,10 +2,10 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { decodeToken } from '@/utils/sessionToken';
 import { cookies } from 'next/headers';
 import { ROLE_CASHIER, ROLE_CUSTOMER } from '@/constants/roles';
+import { CASHIER_PATH } from '@/constants/url';
 
 const privatePaths = '/admin';
 const authPaths = ['/login', '/register'];
-const cashierPath = ['/admin/transaction', '/admin/product'];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -22,11 +22,19 @@ export async function middleware(req: NextRequest) {
           NextResponse.redirect(new URL('/admin/dashboard', req.url));
         }
       }
+
+      if (roles.length == 1 && roles.includes(ROLE_CASHIER) && !isCashierPath(pathname)) {
+        return NextResponse.redirect(new URL('/admin/dashboard', req.url));
+      }
     }
   }
 
   if (isPrivatePath(pathname) && !accessToken) {
     return NextResponse.redirect(new URL('/login', req.url));
+  }
+
+  if (isAuthPath(pathname) && accessToken) {
+    return NextResponse.redirect(new URL('/admin/dashboard', req.url));
   }
 
   return NextResponse.next();
@@ -38,6 +46,10 @@ function isPrivatePath(pathname: string) {
 
 function isAuthPath(pathname: string) {
   return authPaths.some((path) => pathname.startsWith(path));
+}
+
+function isCashierPath(pathname: string) {
+  return CASHIER_PATH.includes(pathname);
 }
 
 export const config = {

@@ -1,10 +1,10 @@
 'use client';
 import { getProductDetails, getProductsByName } from '@/api/product';
 import { ComboboxComponent } from '@/components/combobox';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Product } from '@/types/product.type';
 import { formatPrice } from '@/utils/formatPrice';
-import { CirclePlus, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 type ProductOption = {
@@ -16,9 +16,9 @@ export default function RowSelectProduct({ setTransactions }: { setTransactions:
   const [searchKeyword, setSearchKeyword] = useState<string>(''); //Tìm kiếm sử dụng cho thẻ select
   const [productOptions, setProductOptions] = useState<ProductOption[]>([]); //Danh sách sản phẩm sử dụng cho thẻ select
   const [product, setProduct] = useState<Product | null>(null); //Lưu trữ thông tin của sản phẩm khi chọn
-  const [selectedValue, setSelectedValue] = useState(null); //Id của sản phẩm khi chọn ở thẻ select
-  const [price, setPrice] = useState(0); //Tổng tiền của một sản phẩm)
-  const [quantity, setQuantity] = useState(0); //Tổng tiền của một sản phẩm)
+  const [selectedValue, setSelectedValue] = useState(''); //Id của sản phẩm khi chọn ở thẻ select
+  const [totalPrice, setTotalPrice] = useState(0); //Tổng tiền của một sản phẩm
+  const [quantity, setQuantity] = useState(0); //Tổng số lượng của một sản phẩm
 
   const fetchProduct = async () => {
     const { data } = await getProductsByName(searchKeyword);
@@ -42,37 +42,43 @@ export default function RowSelectProduct({ setTransactions }: { setTransactions:
   useEffect(() => {
     fetchDetailProduct();
     setQuantity(0);
-    setPrice(0);
+    setTotalPrice(0);
   }, [selectedValue]);
 
-  const handlePriceChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (product) {
-      const newPrice = product.price * Number(event.target.value);
-      const newQuantity = Number(event.target.value);
-      setPrice(newPrice);
-      setQuantity(newQuantity);
+  const handleQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuantity(parseInt(event.target.value));
+    const totalPriceProduct = product ? product.price * parseInt(event.target.value) : 0;
+    setTotalPrice(totalPriceProduct);
+  };
 
-      setTransactions((prevTransactions: any) => [
-        ...prevTransactions,
-        {
-          product: { id: selectedValue },
-          quantity: newQuantity,
-          total: product.price * newQuantity,
-        },
-      ]);
+  const handleProductSelect = (productId: string) => {
+    setSelectedValue(productId);
+  };
+
+  const handleSubmit = () => {
+    if (selectedValue && quantity > 0) {
+      setTransactions(selectedValue, quantity, totalPrice);
     }
   };
 
   return (
     <>
-      <div className='w-[300px]'>
-        <ComboboxComponent options={productOptions} setSelectedValue={setSelectedValue} keySearch={searchKeyword} setKeySearch={setSearchKeyword} />
+      <div className='col-span-4'>
+        <ComboboxComponent
+          options={productOptions}
+          setSelectedValue={handleProductSelect}
+          keySearch={searchKeyword}
+          setKeySearch={setSearchKeyword}
+        />
       </div>
-      <div className='w-[200px]'>{formatPrice(product ? product.price : 0)}</div>
-      <div className='w-[200px]'>
-        <Input type='number' min={1} onChange={handlePriceChange} value={quantity} className='w-[100px]' />
+      <div className='col-span-2 flex items-center'>{formatPrice(product ? product.price : 0)}</div>
+      <div className='col-span-2'>
+        <Input type='number' min={1} onChange={handleQuantityChange} value={quantity} className='w-[100px]' />
       </div>
-      <div className='w-[200px]'>{formatPrice(product ? price : 0)}</div>
+      <div className='col-span-2 flex items-center'>{formatPrice(totalPrice)}</div>
+      <div className='col-span-1'>
+        <Button onClick={() => handleSubmit()}>Thêm</Button>
+      </div>
     </>
   );
 }

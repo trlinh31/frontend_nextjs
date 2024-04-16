@@ -29,7 +29,7 @@ export default function UserNav({ user }: any) {
           <Button variant='ghost' className='relative h-8 w-8 rounded-full'>
             <Avatar>
               <AvatarImage src='https://github.com/shadcn.png' alt='@shadcn' />
-              <AvatarFallback>CN</AvatarFallback>
+              <AvatarFallback>{user?.sub}</AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>

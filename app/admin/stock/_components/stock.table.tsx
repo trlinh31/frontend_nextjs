@@ -1,57 +1,43 @@
 'use client';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Customer } from '@/types/customer.type';
 import { MoreHorizontal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { URL_CREATE_CUSTOMER, URL_UPDATE_CUSTOMER } from '@/constants/url';
+import { URL_CREATE_STOCK } from '@/constants/url';
 import { useToast } from '@/components/ui/use-toast';
 import PaginationSection from '@/components/pagination';
-import { deleteCustomer } from '@/api/customer';
+import { formatPrice } from '@/utils/formatPrice';
+import { useState } from 'react';
+import { Stock } from '@/types/stock';
+import { formatDate } from '@/utils/formatDate';
 
-type CustomerPropType = {
-  customers: Customer[] | [];
+type propType = {
+  stocks: Stock[] | [];
   pagination: {
     currentPage: number;
     totalPage: number;
   };
 };
 
-const tableHeader = ['STT', 'Tên đăng nhập', 'Họ tên', 'Giới tính', 'Email', 'Địa chỉ', ''];
+const tableHeader = ['STT', 'Mã phiếu', 'Tổng hoá đơn', 'Ngày tạo', ''];
 
-export default function CustomerTable({ customers, pagination }: CustomerPropType) {
+export default function StockTable({ stocks, pagination }: propType) {
   const { toast } = useToast();
   const router = useRouter();
   const { currentPage, totalPage } = pagination;
 
-  const handleDeleteCustomer = async (id: string) => {
-    console.log(id);
-
-    try {
-      const res = await deleteCustomer(id);
-      console.log('Status', res);
-
-      if (res === 200) {
-        toast({
-          description: 'Xoá khách hàng thành công',
-        });
-        router.refresh();
-      }
-    } catch (error) {
-      console.log(error);
-      toast({
-        description: 'Xoá khách hàng thất bại',
-      });
-    }
-  };
+  // const handleQuickViewTransaction = (transaction: any) => {
+  //   setTransaction(transaction);
+  //   setOpenModal(!isOpenModal);
+  // };
 
   return (
     <>
       <div className='flex items-center justify-end mb-8'>
         <Button asChild>
-          <Link href={URL_CREATE_CUSTOMER}>Thêm mới</Link>
+          <Link href={URL_CREATE_STOCK}>Thêm mới</Link>
         </Button>
       </div>
       <Table className='border'>
@@ -65,25 +51,21 @@ export default function CustomerTable({ customers, pagination }: CustomerPropTyp
           </TableRow>
         </TableHeader>
         <TableBody className='text-center'>
-          {customers?.map((item: Customer, index: number) => (
+          {stocks?.map((item: Stock, index: number) => (
             <TableRow key={item.id}>
               <TableCell className='font-medium'>{index + 1}</TableCell>
-              <TableCell>{item.username}</TableCell>
-              <TableCell>{item.fullName}</TableCell>
-              <TableCell>{item.gender}</TableCell>
-              <TableCell>{item.email}</TableCell>
-              <TableCell>{item.address}</TableCell>
+              <TableCell>{item.code}</TableCell>
+              <TableCell>{formatPrice(item.billInvoice)}</TableCell>
+              <TableCell>{formatDate(item.createdDate)}</TableCell>
               <TableCell className='w-[100px]'>
                 <DropdownMenu>
                   <DropdownMenuTrigger>
                     <MoreHorizontal />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
-                    <DropdownMenuItem asChild>
-                      <Link href={URL_UPDATE_CUSTOMER + item.id}>Cập nhật</Link>
-                    </DropdownMenuItem>
+                    <DropdownMenuItem>Xem</DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => handleDeleteCustomer(item.id)}>Xoá</DropdownMenuItem>
+                    <DropdownMenuItem>Xoá</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>
@@ -92,6 +74,7 @@ export default function CustomerTable({ customers, pagination }: CustomerPropTyp
         </TableBody>
       </Table>
       <PaginationSection totalPage={totalPage} currentPage={currentPage} />
+      {/* <TransactionModal transaction={transaction} isOpen={isOpenModal} setOpen={setOpenModal} /> */}
     </>
   );
 }

@@ -2,15 +2,19 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import Cookies from 'js-cookie';
 import { decodeToken } from '@/utils/sessionToken';
-import { usePathname, useRouter } from 'next/navigation';
-import { useToast } from '@/components/ui/use-toast';
 
-const AuthContext = createContext({
+interface AuthContextType {
+  roles: string[];
+}
+
+const initialAuthContextValue: AuthContextType = {
   roles: [],
-});
+};
+
+const AuthContext = createContext<AuthContextType>(initialAuthContextValue);
 
 export function AuthProvider({ children }: React.PropsWithChildren) {
-  const [userRoles, setUserRoles] = useState<any>([]);
+  const [userRoles, setUserRoles] = useState<string[]>([]);
   const accessToken = Cookies.get('accessToken');
 
   useEffect(() => {

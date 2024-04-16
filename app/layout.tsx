@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Open_Sans } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { ThemeProvider } from '@/components/layouts/ThemeToggle/theme-provider';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Open_Sans({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Dashboard',

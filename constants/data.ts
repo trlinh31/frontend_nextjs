@@ -6,6 +6,8 @@ import {
   URL_SHOW_GROUP,
   URL_SHOW_PRODUCT,
   URL_SHOW_ROLE,
+  URL_SHOW_STOCK,
+  URL_SHOW_TRANSACTION,
   URL_SHOW_USER,
 } from '@/constants/url';
 import { NavItem } from '@/types';
@@ -39,20 +41,18 @@ export const navItems: NavItem[] = [
   },
   {
     title: 'Đơn hàng',
-    href: '/admin/transaction',
+    href: URL_SHOW_TRANSACTION,
     icon: ShoppingBag,
   },
   {
     title: 'Kho hàng',
-    href: '/admin/kho-hang',
+    href: URL_SHOW_STOCK,
     icon: Store,
-    disabled: true,
   },
   {
     title: 'Tài khoản',
     href: URL_SHOW_USER,
     icon: User,
-    disabled: true,
   },
   {
     title: 'Vai trò',

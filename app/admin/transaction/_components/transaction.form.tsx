@@ -16,6 +16,8 @@ import { Trash2 } from 'lucide-react';
 import { formatPrice } from '@/utils/formatPrice';
 import Link from 'next/link';
 import { createTransaction } from '@/api/transaction';
+import RowSelectCustomer from '@/components/row-select-customer';
+import { Label } from '@/components/ui/label';
 
 export default function TransactionForm() {
   const { toast } = useToast();
@@ -23,8 +25,7 @@ export default function TransactionForm() {
   const [row, setRow] = useState<any>([]);
   const [transactions, setTransactions] = useState([]);
   const [total, setTotal] = useState(0);
-
-  console.log(transactions);
+  const [customer, setCustomer] = useState<Customer | undefined>();
 
   useEffect(() => {
     const totalInvoice = transactions?.reduce((total: number, item: any) => {
@@ -48,20 +49,26 @@ export default function TransactionForm() {
     resolver: zodResolver(TransactionSchema),
     defaultValues: {
       customer: {
-        username: 'linh3',
+        username: '',
       },
-      name: 'aaaa',
-      email: 'aaaa@gmail.com',
-      address: 'aaaa',
+      name: '',
+      email: '',
+      address: '',
       note: '',
       transactionDetails: [],
     },
   });
 
+  useEffect(() => {
+    form.setValue('customer.username', customer?.username ?? '');
+    form.setValue('name', customer?.fullName ?? '');
+    form.setValue('email', customer?.email ?? '');
+    form.setValue('address', customer?.address ?? '');
+  }, [customer, form]);
+
   const onSubmit = async (data: TransactionSchemaType) => {
     if (transactions.length > 0) {
       data.transactionDetails = transactions;
-
       const successMessage = 'Tạo đơn hàng thành công';
       try {
         const res = await createTransaction(data);
@@ -85,6 +92,10 @@ export default function TransactionForm() {
   return (
     <>
       <div className='mt-10 space-y-6'>
+        <div className='flex items-center gap-x-3'>
+          <Label>Chọn khách hàng:</Label>
+          <RowSelectCustomer setCustomer={setCustomer} />
+        </div>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit, (error) => {

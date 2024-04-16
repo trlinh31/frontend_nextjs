@@ -12,6 +12,8 @@ import { Transaction } from '@/types/transaction.type';
 import { formatPrice } from '@/utils/formatPrice';
 import { Badge } from '@/components/ui/badge';
 import { cancelTransaction, confirmTransaction, deleteTransaction } from '@/api/transaction';
+import { useState } from 'react';
+import TransactionModal from '@/app/admin/transaction/_components/transaction.modal';
 
 type propType = {
   transactions: Transaction[] | [];
@@ -24,11 +26,11 @@ type propType = {
 const statusTransaction = (status: number) => {
   switch (status) {
     case 0:
-      return <Badge variant={'destructive'}>Huỷ bỏ</Badge>;
+      return <Badge variant={'destructive'}>Đã huỷ</Badge>;
     case 1:
       return <Badge variant={'secondary'}>Chờ xác nhận</Badge>;
     default:
-      return <Badge>Hoàn thành</Badge>;
+      return <Badge>Đã xác nhận</Badge>;
   }
 };
 
@@ -38,6 +40,8 @@ export default function TransactionTable({ transactions, pagination }: propType)
   const { toast } = useToast();
   const router = useRouter();
   const { currentPage, totalPage } = pagination;
+  const [transaction, setTransaction] = useState<Transaction | any>();
+  const [isOpenModal, setOpenModal] = useState<boolean>(false);
 
   const handleConfirmTransaction = async (id: string) => {
     try {
@@ -53,6 +57,11 @@ export default function TransactionTable({ transactions, pagination }: propType)
         description: 'Xác nhận đơn hàng thất bại',
       });
     }
+  };
+
+  const handleQuickViewTransaction = (transaction: any) => {
+    setTransaction(transaction);
+    setOpenModal(!isOpenModal);
   };
 
   const handleCancelTransaction = async (id: string) => {
@@ -122,21 +131,21 @@ export default function TransactionTable({ transactions, pagination }: propType)
                     <MoreHorizontal />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
+                    <DropdownMenuItem onClick={() => handleQuickViewTransaction(item)}>Xem</DropdownMenuItem>
+                    <DropdownMenuSeparator />
                     {item.status == 1 && (
                       <>
-                        <DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleConfirmTransaction(item.id)}>Xác nhận</DropdownMenuItem>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleCancelTransaction(item.id)}>Huỷ</DropdownMenuItem>
-                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleConfirmTransaction(item.id)}>Xác nhận</DropdownMenuItem>
                         <DropdownMenuSeparator />
                       </>
                     )}
-                    <DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleDeleteCustomer(item.id)}>Xoá</DropdownMenuItem>
-                    </DropdownMenuItem>
+                    {item.status != 0 && (
+                      <>
+                        <DropdownMenuItem onClick={() => handleCancelTransaction(item.id)}>Huỷ</DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                      </>
+                    )}
+                    <DropdownMenuItem onClick={() => handleDeleteCustomer(item.id)}>Xoá</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>
@@ -145,6 +154,7 @@ export default function TransactionTable({ transactions, pagination }: propType)
         </TableBody>
       </Table>
       <PaginationSection totalPage={totalPage} currentPage={currentPage} />
+      <TransactionModal transaction={transaction} isOpen={isOpenModal} setOpen={setOpenModal} />
     </>
   );
 }

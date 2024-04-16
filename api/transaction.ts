@@ -2,8 +2,7 @@
 import { revalidateTag } from 'next/cache';
 import { TransactionSchemaType } from '@/lib/form-schema';
 import { cookies } from 'next/headers';
-
-const BASE_URL = process.env.NEXT_PUBLIC_URL_BACKEND;
+import { BASE_URL } from '@/api';
 
 export const getAllTransactions = async (page = 0) => {
   const url = `${BASE_URL}/transaction/list?page=${page}`;
@@ -43,6 +42,27 @@ export const createTransaction = async (data: TransactionSchemaType) => {
     console.error(error);
   } finally {
     revalidateTag('transactions');
+  }
+};
+
+export const getTransactionDetails = async (id: string) => {
+  const url = `${BASE_URL}/transaction/update/${id}`;
+
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${cookies().get('accessToken')?.value}`,
+      },
+      cache: 'no-store',
+    });
+
+    const transaction = await response.json();
+    return { data: transaction };
+  } catch (error) {
+    console.error('Failed to fetch data', error);
+    return { data: null };
   }
 };
 

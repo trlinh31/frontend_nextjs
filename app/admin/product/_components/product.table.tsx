@@ -9,13 +9,14 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { URL_CREATE_PRODUCT, URL_UPDATE_PRODUCT } from '@/constants/url';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ImageNotFound from '@/components/image-404';
 import { deleteProduct } from '@/api/product';
 import { useToast } from '@/components/ui/use-toast';
 import PaginationSection from '@/components/pagination';
 import ProductModal from '@/app/admin/product/_components/product.modal';
 import { Category } from '@/types/category.type';
+import Badge from '@/components/badge';
 
 type ProductPropType = {
   products: Product[] | [];
@@ -25,14 +26,37 @@ type ProductPropType = {
   };
 };
 
-const tableHeader = ['STT', 'Mã sản phẩm', 'Ảnh sản phẩm', 'Tên sản phẩm', 'Mô tả', 'Giá nhập', 'Đơn giá', 'Số lượng', 'Nhóm sản phẩm', ''];
+const tableHeader = [
+  'STT',
+  'Mã sản phẩm',
+  'Ảnh sản phẩm',
+  'Tên sản phẩm',
+  'Mô tả',
+  'Giá nhập',
+  'Đơn giá',
+  'Số lượng',
+  'Nhóm sản phẩm',
+  'Tình trạng',
+  '',
+];
 
 export default function ProductTable({ products, pagination }: ProductPropType) {
   const { toast } = useToast();
   const router = useRouter();
-  const [product, setProduct] = useState<any>();
+  const [product, setProduct] = useState<Product | any>();
   const [isOpenModal, setOpenModal] = useState<boolean>(false);
   const { currentPage, totalPage } = pagination;
+
+  useEffect(() => {
+    const test = products.some((item: Product) => item.quantity === 0);
+    if (test) {
+      toast({
+        variant: 'destructive',
+        title: 'Thông báo',
+        description: 'Một số sản phẩm đã hết hàng! Vui lòng nhập hàng mới',
+      });
+    }
+  }, []);
 
   const handleQuickViewProduct = (product: any) => {
     setProduct(product);
@@ -110,6 +134,9 @@ export default function ProductTable({ products, pagination }: ProductPropType) 
                       </span>
                     );
                   })}
+                </TableCell>
+                <TableCell>
+                  {product.quantity > 0 ? <Badge status={true} content='Còn hàng' /> : <Badge status={false} content='Hết hàng' />}
                 </TableCell>
                 <TableCell className='w-[100px]'>
                   <DropdownMenu>

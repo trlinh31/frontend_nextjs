@@ -8,11 +8,13 @@ import { useForm } from 'react-hook-form';
 import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 import { login } from '@/api/auth';
-import { decodeToken, saveToken } from '@/utils/sessionToken';
+import { saveToken } from '@/utils/sessionToken';
 import { URL_DASHBOARD } from '@/constants/url';
+import { useRouter } from 'next/navigation';
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const router = useRouter();
 
   const form = useForm<LoginSchemaType>({
     resolver: zodResolver(LoginSchema),
@@ -30,9 +32,11 @@ export default function LoginForm() {
   const onSubmit = async (values: LoginSchemaType) => {
     try {
       const { accessToken, refreshToken, status } = await login(values);
+      console.log(accessToken, refreshToken, status);
+
       if (status === 200) {
         await saveToken(accessToken, refreshToken);
-        window.location.href = URL_DASHBOARD;
+        router.push(URL_DASHBOARD);
       }
     } catch (error) {
       console.log(error);
