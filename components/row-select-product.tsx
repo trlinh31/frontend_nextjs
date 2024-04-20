@@ -47,7 +47,7 @@ export default function RowSelectProduct({ setTransactions }: { setTransactions:
 
   const handleQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuantity(parseInt(event.target.value));
-    const totalPriceProduct = product ? product.price * parseInt(event.target.value) : 0;
+    const totalPriceProduct = product ? product.importPrice * parseInt(event.target.value) : 0;
     setTotalPrice(totalPriceProduct);
   };
 
@@ -71,9 +71,9 @@ export default function RowSelectProduct({ setTransactions }: { setTransactions:
           setKeySearch={setSearchKeyword}
         />
       </div>
-      <div className='col-span-2 flex items-center'>{formatPrice(product ? product.price : 0)}</div>
+      <div className='col-span-2 flex items-center'>{formatPrice(product ? product.importPrice : 0)}</div>
       <div className='col-span-2'>
-        <Input type='number' min={1} onChange={handleQuantityChange} value={quantity} className='w-[100px]' />
+        <Input type='number' min={1} onChange={handleQuantityChange} value={quantity} max={product?.quantity} className='w-[100px]' />
       </div>
       <div className='col-span-2 flex items-center'>{formatPrice(totalPrice)}</div>
       <div className='col-span-1'>

@@ -1,11 +1,14 @@
+'use client';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Product } from '@/types/product.type';
 import { formatPrice } from '@/utils/formatPrice';
 import { useCartStore } from '@/zustand/store';
 import { X } from 'lucide-react';
+import Cookies from 'js-cookie';
+import { useToast } from '@/components/ui/use-toast';
+import { decodeToken } from '@/utils/sessionToken';
+import { createTransaction } from '@/api/transaction';
 
 type propsType = {
   isOpen: boolean;
@@ -14,9 +17,43 @@ type propsType = {
 
 export default function CartComponent({ isOpen, setOpen }: propsType) {
   const cart = useCartStore();
+  const { toast } = useToast();
+  const tokenUser = Cookies.get('accessToken') ?? null;
 
   const handleRemoveProductFromCart = (id: string) => {
     cart.removeItem(id);
+  };
+
+  const handleSubmit = async () => {
+    if (!tokenUser) {
+      toast({
+        variant: 'destructive',
+        description: 'Vui lòng đăng nhập để hoàn thành đơn hàng',
+      });
+      return;
+    }
+    const tokenDecode = decodeToken(tokenUser!!);
+    if (tokenDecode) {
+      const data = {
+        customer: {
+          username: tokenDecode.sub,
+        },
+        name: 'test',
+        email: 'test@gmail.com',
+        address: 'Hà Nội',
+        transactionDetails: cart.items.map((item) => ({
+          product: { id: item.product.id },
+          quantity: item.quantity,
+        })),
+      };
+      const res = await createTransaction(data);
+      if (res === 200) {
+        cart.removeAllItem();
+        toast({
+          description: 'Đơn hàng đang chờ được xác nhận',
+        });
+      }
+    }
   };
 
   return (
@@ -39,7 +76,7 @@ export default function CartComponent({ isOpen, setOpen }: propsType) {
                         <h3 className='mt-1 text-sm font-semibold text-neutral-900 line-clamp-1'>{item.product.name}</h3>
                         <h3 className='mt-1 text-sm font-semibold text-neutral-500 line-clamp-1'>x{item.quantity}</h3>
                         <h3 className='mt-1 text-sm font-semibold text-neutral-900 line-clamp-1'>
-                          {formatPrice(item.product.price * item.quantity)}
+                          <span>Thành tiền:</span> {formatPrice(item.product.price * item.quantity)}
                         </h3>
                       </div>
                       <div className='col-span-1 pt-1'>
@@ -58,7 +95,7 @@ export default function CartComponent({ isOpen, setOpen }: propsType) {
               <h3 className='text-xl font-semibold text-neutral-900'>{formatPrice(cart.getTotalPrice())}</h3>
             </div>
             <div className='grid pt-4'>
-              <Button>Đặt hàng</Button>
+              <Button onClick={handleSubmit}>Đặt hàng</Button>
             </div>
           </div>
         </SheetContent>

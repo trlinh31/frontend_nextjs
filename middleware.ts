@@ -17,7 +17,7 @@ export async function middleware(req: NextRequest) {
       const { roles } = decodedToken;
       if (isPrivatePath(pathname)) {
         if (roles.length == 1 && roles.includes(ROLE_CUSTOMER)) {
-          return NextResponse.redirect(new URL('/client', req.url));
+          return NextResponse.redirect(new URL('/', req.url));
         } else {
           NextResponse.redirect(new URL('/admin/dashboard', req.url));
         }

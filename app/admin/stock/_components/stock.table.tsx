@@ -2,16 +2,15 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { MoreHorizontal } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { URL_CREATE_STOCK } from '@/constants/url';
-import { useToast } from '@/components/ui/use-toast';
 import PaginationSection from '@/components/pagination';
 import { formatPrice } from '@/utils/formatPrice';
 import { useState } from 'react';
 import { Stock } from '@/types/stock';
 import { formatDate } from '@/utils/formatDate';
+import StockModal from '@/app/admin/stock/_components/stock.modal';
 
 type propType = {
   stocks: Stock[] | [];
@@ -24,14 +23,14 @@ type propType = {
 const tableHeader = ['STT', 'Mã phiếu', 'Tổng hoá đơn', 'Ngày tạo', ''];
 
 export default function StockTable({ stocks, pagination }: propType) {
-  const { toast } = useToast();
-  const router = useRouter();
   const { currentPage, totalPage } = pagination;
+  const [stock, setStock] = useState<Stock | any>();
+  const [isOpenModal, setOpenModal] = useState<boolean>(false);
 
-  // const handleQuickViewTransaction = (transaction: any) => {
-  //   setTransaction(transaction);
-  //   setOpenModal(!isOpenModal);
-  // };
+  const handleQuickViewTransaction = (stock: Stock) => {
+    setStock(stock);
+    setOpenModal(!isOpenModal);
+  };
 
   return (
     <>
@@ -63,9 +62,7 @@ export default function StockTable({ stocks, pagination }: propType) {
                     <MoreHorizontal />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
-                    <DropdownMenuItem>Xem</DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>Xoá</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleQuickViewTransaction(item)}>Xem</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>
@@ -74,7 +71,7 @@ export default function StockTable({ stocks, pagination }: propType) {
         </TableBody>
       </Table>
       <PaginationSection totalPage={totalPage} currentPage={currentPage} />
-      {/* <TransactionModal transaction={transaction} isOpen={isOpenModal} setOpen={setOpenModal} /> */}
+      <StockModal stock={stock} isOpen={isOpenModal} setOpen={setOpenModal} />
     </>
   );
 }

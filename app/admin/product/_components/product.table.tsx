@@ -17,6 +17,7 @@ import PaginationSection from '@/components/pagination';
 import ProductModal from '@/app/admin/product/_components/product.modal';
 import { Category } from '@/types/category.type';
 import Badge from '@/components/badge';
+import { getProductFeedbacks } from '@/api/feedback';
 
 type propType = {
   products: Product[] | [];
@@ -43,13 +44,14 @@ const tableHeader = [
 export default function ProductTable({ products, pagination }: propType) {
   const { toast } = useToast();
   const router = useRouter();
-  const [product, setProduct] = useState<Product | any>();
+  const [product, setProduct] = useState<any>();
   const [isOpenModal, setOpenModal] = useState<boolean>(false);
   const { currentPage, totalPage } = pagination;
+  const [typeModal, setTypeModal] = useState<string>('detail');
 
   useEffect(() => {
-    const test = products.some((item: Product) => item.quantity === 0);
-    if (test) {
+    const checkProductIsOutIsStock = products.some((item: Product) => item.quantity === 0);
+    if (checkProductIsOutIsStock) {
       toast({
         variant: 'destructive',
         title: 'Thông báo',
@@ -59,7 +61,18 @@ export default function ProductTable({ products, pagination }: propType) {
   }, []);
 
   const handleQuickViewProduct = (product: any) => {
+    setTypeModal('detail');
     setProduct(product);
+    setOpenModal(!isOpenModal);
+  };
+
+  const handleQuickViewProductFeedback = async (id: string) => {
+    const { data } = await getProductFeedbacks(id);
+    if (!data) {
+      return;
+    }
+    setTypeModal('feedbacks');
+    setProduct(data);
     setOpenModal(!isOpenModal);
   };
 
@@ -87,7 +100,7 @@ export default function ProductTable({ products, pagination }: propType) {
           <Link href={URL_CREATE_PRODUCT}>Thêm mới</Link>
         </Button>
       </div>
-      <ScrollArea className='h-[50vh] border'>
+      <ScrollArea className='h-[55vh] border'>
         <Table>
           <TableHeader className='bg-green-500'>
             <TableRow>
@@ -146,6 +159,8 @@ export default function ProductTable({ products, pagination }: propType) {
                     <DropdownMenuContent>
                       <DropdownMenuItem onClick={() => handleQuickViewProduct(product)}>Xem</DropdownMenuItem>
                       <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => handleQuickViewProductFeedback(product.id)}>Xem đánh giá</DropdownMenuItem>
+                      <DropdownMenuSeparator />
                       <DropdownMenuItem asChild>
                         <Link href={URL_UPDATE_PRODUCT + product.id}>Cập nhật</Link>
                       </DropdownMenuItem>
@@ -160,7 +175,7 @@ export default function ProductTable({ products, pagination }: propType) {
         </Table>
       </ScrollArea>
       <PaginationSection totalPage={totalPage} currentPage={currentPage} />
-      <ProductModal product={product} isOpen={isOpenModal} setOpen={setOpenModal} />
+      <ProductModal data={product} isOpen={isOpenModal} setOpen={setOpenModal} type={typeModal} />
     </>
   );
 }

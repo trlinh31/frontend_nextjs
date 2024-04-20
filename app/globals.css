@@ -59,23 +59,22 @@
 }
 
 .star-rating {
-  font-size: 1.5rem; /* Kích thước sao */
   unicode-bidi: bidi-override;
-  direction: rtl; /* Sắp xếp sao từ phải sang trái */
+  direction: rtl;
 }
 
 .star-rating span {
   display: inline-block;
   position: relative;
-  width: 1.1em; /* Kích thước của mỗi sao */
+  width: 1.1em;
 }
 
 .star-rating span:before {
   content: '★';
   position: absolute;
-  color: #ddd; /* Màu sao mặc định (xám) */
+  color: #ddd;
 }
 
 .star-rating span.gold:before {
-  color: gold; /* Màu sao khi được đánh giá (vàng) */
+  color: gold;
 }

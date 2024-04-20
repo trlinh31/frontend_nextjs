@@ -2,6 +2,8 @@ import { getAllProducts } from '@/api/product';
 import Header from '@/app/(client)/_component/layouts/header';
 import ProductList from '@/components/product-list';
 import { Product } from '@/types/product.type';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 type paramsProps = {
   searchParams: {
@@ -10,6 +12,12 @@ type paramsProps = {
 };
 
 export default async function Home({ searchParams }: paramsProps) {
+  const token = cookies().get('accessToken')?.value;
+
+  if (!token) {
+    redirect('/login');
+  }
+
   let products: Product[] = [];
   let totalPage = 0;
   const page = searchParams?.page ?? 0;

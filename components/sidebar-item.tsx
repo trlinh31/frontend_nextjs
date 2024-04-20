@@ -28,7 +28,7 @@ export default function SidebarItems({ items }: ISidebarItemProps) {
             <Link key={index} href={item.href} className={`${checkRolesCashier(item.href) && 'pointer-events-none'}`}>
               <span
                 className={`group flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground ${
-                  path === item.href ? 'bg-accent' : 'transparent'
+                  path.includes(item.href) ? 'bg-accent' : 'transparent'
                 }`}>
                 <Icon className='mr-1 h-4 w-8' />
                 <span>{item.title}</span>

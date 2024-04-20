@@ -4,6 +4,7 @@ import { ShoppingBag, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import CartComponent from '@/components/cart';
 import { useState } from 'react';
+import ClientNav from '@/app/(client)/_component/layouts/client-nav';
 
 export default function Header() {
   const [isOpen, setOpen] = useState(false);
@@ -21,12 +22,13 @@ export default function Header() {
               Keysoft
             </Link>
             <div>
-              <Button variant={'link'}>
-                <User color='black' />
-              </Button>
-              <Button variant={'link'} onClick={handleOpenViewCart}>
+              <Link href={'/orders'}>Lịch sử đơn hàng</Link>
+            </div>
+            <div className='flex items-center gap-x-4'>
+              <ClientNav />
+              <button onClick={handleOpenViewCart}>
                 <ShoppingBag color='black' />
-              </Button>
+              </button>
             </div>
           </nav>
         </div>

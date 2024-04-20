@@ -8,7 +8,7 @@ export const ProductSchema = z.object({
       name: z.string(),
     })
   ),
-  description: z.string().min(1, { message: 'Vui lòng nhập mô tả' }),
+  description: z.string(),
   importPrice: z.coerce.number({ invalid_type_error: 'Giá nhập không hợp lệ' }).min(1, { message: 'Vui lòng nhập giá nhập' }),
   price: z.coerce.number({ invalid_type_error: 'Đơn giá không hợp lệ' }).min(1, { message: 'Vui lòng nhập đơn giá' }),
   quantity: z.coerce.number({ invalid_type_error: 'Số lượng không hợp lệ' }),
@@ -107,6 +107,11 @@ export const StockSchema = z.object({
   }),
 });
 
+export const FeedbackSchema = z.object({
+  comment: z.string().min(1, { message: 'Vui loại nhập nội dung đánh giá' }),
+  score: z.number().min(1, { message: 'Vui loại chọn điểm đánh giá' }),
+});
+
 export type ProductSchemaType = z.TypeOf<typeof ProductSchema>;
 export type UserSchemaType = z.TypeOf<typeof UserSchema>;
 export type LoginSchemaType = z.TypeOf<typeof LoginSchema>;
@@ -117,3 +122,4 @@ export type CustomerSchemaType = z.TypeOf<typeof CustomerSchema>;
 export type TransactionSchemaType = z.TypeOf<typeof TransactionSchema>;
 export type GroupSchemaType = z.TypeOf<typeof GroupSchema>;
 export type StockSchemaType = z.TypeOf<typeof StockSchema>;
+export type FeedbackSchemaType = z.TypeOf<typeof FeedbackSchema>;

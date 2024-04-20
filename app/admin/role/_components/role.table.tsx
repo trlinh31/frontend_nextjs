@@ -13,7 +13,7 @@ type RolePropType = {
   roles: Role[] | [];
 };
 
-const tableHeader = ['STT', 'Tên vai trò', ''];
+const tableHeader = ['STT', 'Mã vai trò', 'Tên vai trò', ''];
 
 export default function RoleTable({ roles }: RolePropType) {
   const { toast } = useToast();
@@ -57,6 +57,7 @@ export default function RoleTable({ roles }: RolePropType) {
           {roles?.map((role: Role, index: number) => (
             <TableRow key={role.id}>
               <TableCell>{index + 1}</TableCell>
+              <TableCell>{role.code}</TableCell>
               <TableCell>{role.name}</TableCell>
               <TableCell className='w-[100px]'>
                 <DropdownMenu>

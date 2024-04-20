@@ -20,7 +20,7 @@ type propType = {
   };
 };
 
-const tableHeader = ['STT', 'Họ tên', 'Email', 'Địa chỉ', 'Nhóm', 'Vai trò', ''];
+const tableHeader = ['STT', 'Tên đăng nhập', 'Họ tên', 'Email', 'Địa chỉ', 'Nhóm', 'Vai trò', ''];
 
 export default function UserTable({ users, pagination }: propType) {
   const { toast } = useToast();
@@ -48,6 +48,7 @@ export default function UserTable({ users, pagination }: propType) {
           {users?.map((user: User, index: number) => (
             <TableRow key={user.id}>
               <TableCell>{index + 1}</TableCell>
+              <TableCell>{user.username}</TableCell>
               <TableCell>{user.fullName}</TableCell>
               <TableCell>{user.email}</TableCell>
               <TableCell>{user.address}</TableCell>

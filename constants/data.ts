@@ -2,7 +2,6 @@ import {
   URL_DASHBOARD,
   URL_SHOW_CATEGORY,
   URL_SHOW_CUSTOMER,
-  URL_SHOW_FEEDBACK,
   URL_SHOW_GROUP,
   URL_SHOW_PRODUCT,
   URL_SHOW_ROLE,
@@ -28,11 +27,6 @@ export const navItems: NavItem[] = [
     title: 'Sản phẩm',
     href: URL_SHOW_PRODUCT,
     icon: Shirt,
-  },
-  {
-    title: 'Đánh giá sản phẩm',
-    href: URL_SHOW_FEEDBACK,
-    icon: MessageSquareMore,
   },
   {
     title: 'Khách hàng',

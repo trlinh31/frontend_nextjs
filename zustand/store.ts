@@ -12,6 +12,7 @@ interface CartState {
   addItem: (product: Product) => void;
   getTotalPrice: () => number;
   removeItem: (id: string) => void;
+  removeAllItem: () => void;
 }
 
 export const useCartStore = create(
@@ -22,7 +23,9 @@ export const useCartStore = create(
         const itemExists = get().items.find((item) => item.product.id === product.id);
         if (itemExists) {
           if (typeof itemExists.quantity === 'number') {
-            itemExists.quantity++;
+            if (itemExists.quantity <= product.quantity - 1) {
+              itemExists.quantity++;
+            }
           }
           set({ items: [...get().items] });
         } else {
@@ -36,10 +39,12 @@ export const useCartStore = create(
       getTotalPrice: () => {
         return get().items.reduce((total: number, item: CartItem) => total + item.product.price * item.quantity, 0);
       },
+      removeAllItem: () => {
+        set({ items: [] });
+      },
     }),
     {
       name: 'cartItems',
-      getStorage: () => sessionStorage,
     }
   )
 );

@@ -1,4 +1,5 @@
-import React from 'react';
+'use client';
+import React, { useId } from 'react';
 import Select from 'react-select';
 
 export const ComboboxComponent = ({ options, setSelectedValue, keySearch, setKeySearch }: any) => {
@@ -9,9 +10,8 @@ export const ComboboxComponent = ({ options, setSelectedValue, keySearch, setKey
   return (
     <>
       <Select
-        id='abc'
-        className='w-[300px]'
-        classNamePrefix='select'
+        className='w-[300px] text-black'
+        instanceId={useId()}
         value={options.value}
         inputValue={keySearch}
         onInputChange={(e) => setKeySearch(e)}

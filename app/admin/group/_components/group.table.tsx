@@ -63,7 +63,7 @@ export default function GroupTable({ groups }: propType) {
               <TableCell>{group.code}</TableCell>
               <TableCell>{group.name}</TableCell>
               <TableCell className='w-[400px]'>
-                <div className='flex gap-2'>
+                <div className='flex flex-wrap gap-2'>
                   {group.roles.map((item: Role) => (
                     <Badge key={item.id}>{item.name}</Badge>
                   ))}

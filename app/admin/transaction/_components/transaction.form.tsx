@@ -23,7 +23,7 @@ export default function TransactionForm() {
   const { toast } = useToast();
   const router = useRouter();
   const [row, setRow] = useState<any>([]);
-  const [transactions, setTransactions] = useState([]);
+  const [transactions, setTransactions] = useState<any>([]);
   const [total, setTotal] = useState(0);
   const [customer, setCustomer] = useState<Customer | undefined>();
 
@@ -34,8 +34,26 @@ export default function TransactionForm() {
     setTotal(totalInvoice);
   }, [transactions]);
 
+  const handleTransitonsChange = (productId: string, quantity: number, total: number) => {
+    const updatedStock = [...transactions];
+    const existingItem = updatedStock.find((item: any) => item.product.id === productId);
+    if (!existingItem) {
+      setTransactions((prevTransaction: any) => [
+        ...prevTransaction,
+        {
+          product: {
+            id: productId,
+          },
+          quantity: quantity,
+          total: total,
+        },
+      ]);
+      toast({ description: 'Thêm sản phẩm thành công' });
+    }
+  };
+
   const handleButtonAddRow = () => {
-    const newRow = [...row, <RowSelectProduct setTransactions={setTransactions} key={row.length} />];
+    const newRow = [...row, <RowSelectProduct setTransactions={handleTransitonsChange} key={row.length} />];
     setRow(newRow);
   };
 
@@ -70,15 +88,11 @@ export default function TransactionForm() {
     if (transactions.length > 0) {
       data.transactionDetails = transactions;
       const successMessage = 'Tạo đơn hàng thành công';
-      try {
-        const res = await createTransaction(data);
-        if (res === 200) {
-          toast({ description: successMessage });
-          router.refresh();
-          router.push(URL_SHOW_TRANSACTION);
-        }
-      } catch {
-        toast({ description: 'Tạo đơn hàng thất bại' });
+      const res = await createTransaction(data);
+      if (res === 200) {
+        toast({ description: successMessage });
+        router.refresh();
+        router.push(URL_SHOW_TRANSACTION);
       }
     } else {
       toast({
@@ -165,24 +179,21 @@ export default function TransactionForm() {
             </div>
           </form>
         </Form>
-        <div className='flex items-center justify-between border-b pb-3 text-gray-400'>
-          <div className='w-[80px]'>Thao tác</div>
-          <div className='w-[300px]'>Sản phẩm</div>
-          <div className='w-[200px]'>Giá</div>
-          <div className='w-[200px]'>Số lượng</div>
-          <div className='w-[200px]'>Giá trị</div>
+        <div className='grid grid-cols-12 w-full border-b pb-3 text-gray-400'>
+          <div className='col-span-1'></div>
+          <div className='col-span-4'>Sản phẩm</div>
+          <div className='col-span-2'>Giá</div>
+          <div className='col-span-2'>Số lượng</div>
+          <div className='col-span-2'>Giá trị</div>
+          <div className='col-span-1'></div>
         </div>
-        <div className='flex items-center justify-between'>
-          <div className='w-[80px] flex items-center gap-x-3'>
-            <button>
-              <Trash2 className='text-gray-500' color='red' />
-            </button>
-          </div>
-          <RowSelectProduct setTransactions={setTransactions} />
+        <div className='grid grid-cols-12 w-full'>
+          <div className='col-span-1 flex items-center'></div>
+          <RowSelectProduct setTransactions={handleTransitonsChange} />
         </div>
         {row.map((item: any, index: number) => (
-          <div key={index} className='flex items-center justify-between'>
-            <div className='w-[80px] flex items-center gap-x-3'>
+          <div key={index} className='grid grid-cols-12 w-full'>
+            <div className='col-span-1 flex items-center'>
               <button onClick={() => handleButtonDeleteRow(index)}>
                 <Trash2 className='text-gray-500' color='red' />
               </button>
@@ -196,16 +207,8 @@ export default function TransactionForm() {
           Thêm sản phẩm
         </Button>
         <div className='space-y-4'>
-          <div className='flex items-center justify-between gap-x-20 pb-2 border-b'>
-            <p className='font-semibold'>Tổng tiền hàng:</p>
-            <p>{formatPrice(total)}</p>
-          </div>
-          <div className='flex items-center justify-between gap-x-20 pb-2 border-b'>
-            <p className='font-semibold'>Giảm giá:</p>
-            <p>{formatPrice(0)}</p>
-          </div>
           <div className='flex items-center justify-between gap-x-20'>
-            <p className='font-semibold'>Tổng thanh toán:</p>
+            <p className='font-semibold'>Tổng cộng:</p>
             <p>{formatPrice(total)}</p>
           </div>
         </div>

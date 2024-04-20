@@ -33,14 +33,14 @@ export default function ProductItem({ product }: { product: Product }) {
         <div className='mt-2'>
           <div className='flex justify-between'>
             <div>
-              <h3 className='mt-1 text-sm font-semibold text-neutral-900'>{product.name}</h3>
+              <h3 className='mt-1 text-sm font-semibold text-neutral-900 line-clamp-1'>{product.name}</h3>
               <p className='mt-1 text-sm font-semibold text-neutral-500'>{product.categories[0].name}</p>
             </div>
             <h3 className='mt-1 text-sm font-semibold text-neutral-900'>{formatPrice(product.price)}</h3>
           </div>
           <div className='grid mt-2'>
-            <Button onClick={() => handleAddProductToCart(product)} className='uppercase'>
-              Add to cart
+            <Button onClick={() => handleAddProductToCart(product)} disabled={product.quantity === 0} className='uppercase'>
+              {product.quantity === 0 ? 'Hết hàng' : 'Mua ngay'}
             </Button>
           </div>
         </div>

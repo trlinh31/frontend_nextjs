@@ -26,7 +26,7 @@ export const getAllTransactions = async (page = 0) => {
   }
 };
 
-export const createTransaction = async (data: TransactionSchemaType) => {
+export const createTransaction = async (data: any) => {
   const url = `${BASE_URL}/transaction/save`;
   try {
     const response = await fetch(url, {
@@ -117,5 +117,23 @@ export const deleteTransaction = async (id: string) => {
     console.error(error);
   } finally {
     revalidateTag('transactions');
+  }
+};
+
+export const getOrderHistory = async (username: string) => {
+  const url = `${BASE_URL}/transaction/order?username=${username}`;
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${cookies().get('accessToken')?.value}`,
+      },
+    });
+    const order = await response.json();
+    return { data: order };
+  } catch (error) {
+    console.error(error);
+    return { data: null };
   }
 };

@@ -45,8 +45,6 @@ export default function ProductForm({ initProduct, categories }: FormPropsType) 
     },
   });
 
-  console.log(form.getValues('productCategories'));
-
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;

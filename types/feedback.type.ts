@@ -1,5 +1,8 @@
 export type Feedback = {
   id: string;
-  rating: number;
-  message: string;
+  product_id: string;
+  customer_id: string;
+  score: number;
+  comment: string;
+  createDate: string;
 };

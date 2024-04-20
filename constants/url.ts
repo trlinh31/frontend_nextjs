@@ -15,11 +15,6 @@ export const URL_CREATE_CUSTOMER = '/admin/customer/create';
 export const URL_UPDATE_CUSTOMER = '/admin/customer/edit/';
 export const URL_DELETE_CUSTOMER = '/admin/customer/delete/';
 
-export const URL_SHOW_FEEDBACK = '/admin/feedback';
-export const URL_CREATE_FEEDBACK = '/admin/feedback/create';
-export const URL_UPDATE_FEEDBACK = '/admin/feedback/edit/';
-export const URL_DELETE_FEEDBACK = '/admin/feedback/delete/';
-
 export const URL_SHOW_USER = '/admin/user';
 export const URL_CREATE_USER = '/admin/user/create';
 export const URL_UPDATE_USER = '/admin/user/edit/';

@@ -13,7 +13,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { User } from '@/types/user.type';
 import { Group } from '@/types/group.type';
 import { createOrUpdateUser } from '@/api/user';
-import { useState } from 'react';
 
 type FormPropsType = {
   initUser?: User | null;
