@@ -4,8 +4,8 @@ import { TransactionSchemaType } from '@/lib/form-schema';
 import { cookies } from 'next/headers';
 import { BASE_URL } from '@/api';
 
-export const getAllStocks = async (page = 0) => {
-  const url = `${BASE_URL}/stock/list?page=${page}`;
+export const getAllStocks = async (keyword = '', page = 0) => {
+  const url = `${BASE_URL}/stock/list?keyword=${keyword}&page=${page}`;
 
   try {
     const response = await fetch(url, {
@@ -42,5 +42,26 @@ export const createStock = async (data: any) => {
     console.error(error);
   } finally {
     revalidateTag('stocks');
+  }
+};
+
+export const getDetailStock = async (id: string) => {
+  const url = `${BASE_URL}/stock/detail/${id}`;
+
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${cookies().get('accessToken')?.value}`,
+      },
+      cache: 'no-store',
+    });
+
+    const res = await response.json();
+    return { data: res };
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    return { data: null };
   }
 };

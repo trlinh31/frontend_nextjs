@@ -18,12 +18,10 @@ export default function RootLayout({
       <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
         <Header />
         <div className='flex'>
-          <AuthProvider>
-            <Sidebar />
-            <main className='w-full pt-16 ml-72'>
-              <div className='p-4'>{children}</div>
-            </main>
-          </AuthProvider>
+          <Sidebar />
+          <main className='w-full pt-16 ml-72'>
+            <div className='p-4'>{children}</div>
+          </main>
         </div>
       </ThemeProvider>
     </>

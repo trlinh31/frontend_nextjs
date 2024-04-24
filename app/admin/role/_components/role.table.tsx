@@ -16,26 +16,6 @@ type RolePropType = {
 const tableHeader = ['STT', 'Mã vai trò', 'Tên vai trò', ''];
 
 export default function RoleTable({ roles }: RolePropType) {
-  const { toast } = useToast();
-  const router = useRouter();
-
-  // const handleDeleteCategory = async (id: string) => {
-  //   try {
-  //     const res = await deleteCategory(id);
-  //     if (res === 200) {
-  //       toast({
-  //         description: 'Xoá danh mục thành công',
-  //       });
-  //       router.refresh();
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     toast({
-  //       description: 'Xoá danh mục thất bại',
-  //     });
-  //   }
-  // };
-
   return (
     <>
       <div className='flex items-center justify-end mb-8'>

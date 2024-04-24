@@ -29,7 +29,7 @@ export default function StockModal({ stock, isOpen, setOpen }: ModalProps) {
           </div>
           <div className='space-y-4'>
             <h2 className='text-2xl font-bold text-gray-600 uppercase'>Thông tin chi tiết phiếu nhập hàng</h2>
-            <Table className='border'>
+            <Table className='border text-black'>
               <TableHeader>
                 <TableRow>
                   <TableHead className='text-center'>STT</TableHead>

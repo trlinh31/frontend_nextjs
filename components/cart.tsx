@@ -50,7 +50,7 @@ export default function CartComponent({ isOpen, setOpen }: propsType) {
       if (res === 200) {
         cart.removeAllItem();
         toast({
-          description: 'Đơn hàng đang chờ được xác nhận',
+          description: 'Đơn hàng đang chờ được vận chuyển',
         });
       }
     }

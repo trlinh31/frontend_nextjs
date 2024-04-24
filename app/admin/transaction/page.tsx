@@ -6,7 +6,7 @@ import TransactionTable from '@/app/admin/transaction/_components/transaction.ta
 
 type paramsProps = {
   searchParams: {
-    [key: string]: number;
+    [key: string]: string | number;
   };
 };
 
@@ -15,8 +15,8 @@ const breadcrumbItem = { title: 'Đơn hàng', link: URL_SHOW_TRANSACTION };
 export default async function ProductPage({ searchParams }: paramsProps) {
   let transactions: Transaction[] = [];
   let totalPage = 0;
-  const page = searchParams?.page ?? 0;
-  const { data, totalPages } = await getAllTransactions(page);
+  const { keyword = '', page = 0 } = searchParams;
+  const { data, totalPages } = await getAllTransactions(keyword.toString(), +page);
   transactions = data && [...data.filter((item: Transaction) => item.enable)];
   totalPage = totalPages;
 
@@ -24,7 +24,7 @@ export default async function ProductPage({ searchParams }: paramsProps) {
     <>
       <BreadCrumb item={breadcrumbItem} />
       <div className='mt-10'>
-        <TransactionTable transactions={transactions} pagination={{ currentPage: page, totalPage: totalPages }} />
+        <TransactionTable transactions={transactions} pagination={{ currentPage: +page, totalPage: totalPages }} />
       </div>
     </>
   );

@@ -11,10 +11,12 @@ import { login } from '@/api/auth';
 import { saveToken } from '@/utils/sessionToken';
 import { URL_DASHBOARD } from '@/constants/url';
 import { useRouter } from 'next/navigation';
+import { useToast } from '@/components/ui/use-toast';
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const router = useRouter();
+  const { toast } = useToast();
 
   const form = useForm<LoginSchemaType>({
     resolver: zodResolver(LoginSchema),
@@ -32,12 +34,18 @@ export default function LoginForm() {
   const onSubmit = async (values: LoginSchemaType) => {
     try {
       const { accessToken, refreshToken, status } = await login(values);
-      console.log(accessToken, refreshToken, status);
 
-      if (status === 200) {
-        await saveToken(accessToken, refreshToken);
-        router.push(URL_DASHBOARD);
+      if (status !== 200) {
+        toast({
+          variant: 'destructive',
+          title: 'Đăng nhập thất bại',
+          description: 'Vui lòng kiểm tra lại tên đăng nhập hoặc mật khẩu',
+        });
+        return;
       }
+
+      await saveToken(accessToken, refreshToken);
+      router.push(URL_DASHBOARD);
     } catch (error) {
       console.log(error);
     }

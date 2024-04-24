@@ -5,7 +5,7 @@ import { MoreHorizontal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { URL_CREATE_TRANSACTION } from '@/constants/url';
+import { URL_CREATE_TRANSACTION, URL_UPDATE_TRANSACTION } from '@/constants/url';
 import { useToast } from '@/components/ui/use-toast';
 import PaginationSection from '@/components/pagination';
 import { Transaction } from '@/types/transaction.type';
@@ -14,6 +14,8 @@ import { Badge } from '@/components/ui/badge';
 import { cancelTransaction, confirmTransaction, deleteTransaction } from '@/api/transaction';
 import { useState } from 'react';
 import TransactionModal from '@/app/admin/transaction/_components/transaction.modal';
+import { Input } from '@/components/ui/input';
+import ConfirmDialog from '@/components/alert-dialog';
 
 type propType = {
   transactions: Transaction[] | [];
@@ -28,9 +30,11 @@ const statusTransaction = (status: number) => {
     case 0:
       return <Badge variant={'destructive'}>Đã huỷ</Badge>;
     case 1:
-      return <Badge variant={'secondary'}>Chờ xác nhận</Badge>;
+      return <Badge variant={'outline'}>Chờ xác nhận</Badge>;
+    case 2:
+      return <Badge variant={'secondary'}>Đã xác nhận</Badge>;
     default:
-      return <Badge>Đã xác nhận</Badge>;
+      return <Badge>Đã nhận hàng</Badge>;
   }
 };
 
@@ -42,64 +46,27 @@ export default function TransactionTable({ transactions, pagination }: propType)
   const { currentPage, totalPage } = pagination;
   const [transaction, setTransaction] = useState<Transaction | any>();
   const [isOpenModal, setOpenModal] = useState<boolean>(false);
-
-  const handleConfirmTransaction = async (id: string) => {
-    try {
-      const res = await confirmTransaction(id);
-      if (res === 200) {
-        toast({
-          description: 'Xác nhận đơn hàng thành công',
-        });
-        router.refresh();
-      }
-    } catch (error) {
-      toast({
-        description: 'Xác nhận đơn hàng thất bại',
-      });
-    }
-  };
+  const [searchValue, setSearchValue] = useState('');
 
   const handleQuickViewTransaction = (transaction: any) => {
     setTransaction(transaction);
     setOpenModal(!isOpenModal);
   };
 
-  const handleCancelTransaction = async (id: string) => {
-    try {
-      const res = await cancelTransaction(id);
-      if (res === 200) {
-        toast({
-          description: 'Huỷ đơn hàng thành công',
-        });
-        router.refresh();
-      }
-    } catch (error) {
-      toast({
-        description: 'Huỷ đơn hàng thất bại',
-      });
-    }
-  };
-
-  const handleDeleteCustomer = async (id: string) => {
-    try {
-      const res = await deleteTransaction(id);
-      if (res === 200) {
-        toast({
-          description: 'Xoá đơn hàng thành công',
-        });
-        router.refresh();
-      }
-    } catch (error) {
-      console.log(error);
-      toast({
-        description: 'Xoá đơn hàng thất bại',
-      });
-    }
+  const handleSubmitSearchForm = (e: any) => {
+    e.preventDefault();
+    router.push(`?keyword=${searchValue}`);
   };
 
   return (
     <>
-      <div className='flex items-center justify-end mb-8'>
+      <div className='flex items-center justify-between mb-8'>
+        <form onSubmit={handleSubmitSearchForm}>
+          <div className='flex items-center gap-x-4'>
+            <Input placeholder='Nhập mã đơn hàng' className='w-[300px]' onChange={(e) => setSearchValue(e.target.value)} />
+            <Button type='submit'>Tìm kiếm</Button>
+          </div>
+        </form>
         <Button asChild>
           <Link href={URL_CREATE_TRANSACTION}>Thêm mới</Link>
         </Button>
@@ -117,7 +84,7 @@ export default function TransactionTable({ transactions, pagination }: propType)
         <TableBody className='text-center'>
           {transactions?.map((item: Transaction, index: number) => (
             <TableRow key={item.id}>
-              <TableCell className='font-medium'>{index + 1}</TableCell>
+              <TableCell className='font-medium'>{currentPage * 10 + index + 1}</TableCell>
               <TableCell>{item.code}</TableCell>
               <TableCell>{item.name}</TableCell>
               <TableCell>{item.address}</TableCell>
@@ -132,20 +99,6 @@ export default function TransactionTable({ transactions, pagination }: propType)
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuItem onClick={() => handleQuickViewTransaction(item)}>Xem</DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    {item.status == 1 && (
-                      <>
-                        <DropdownMenuItem onClick={() => handleConfirmTransaction(item.id)}>Xác nhận</DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                      </>
-                    )}
-                    {item.status != 0 && (
-                      <>
-                        <DropdownMenuItem onClick={() => handleCancelTransaction(item.id)}>Huỷ</DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                      </>
-                    )}
-                    <DropdownMenuItem onClick={() => handleDeleteCustomer(item.id)}>Xoá</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>

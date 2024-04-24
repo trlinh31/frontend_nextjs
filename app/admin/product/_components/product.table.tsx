@@ -16,8 +16,8 @@ import { useToast } from '@/components/ui/use-toast';
 import PaginationSection from '@/components/pagination';
 import ProductModal from '@/app/admin/product/_components/product.modal';
 import { Category } from '@/types/category.type';
-import Badge from '@/components/badge';
 import { getProductFeedbacks } from '@/api/feedback';
+import { Input } from '@/components/ui/input';
 
 type propType = {
   products: Product[] | [];
@@ -34,7 +34,7 @@ const tableHeader = [
   'Tên sản phẩm',
   'Mô tả',
   'Giá nhập',
-  'Đơn giá',
+  'Giá bán',
   'Số lượng',
   'Nhóm sản phẩm',
   'Tình trạng',
@@ -48,17 +48,7 @@ export default function ProductTable({ products, pagination }: propType) {
   const [isOpenModal, setOpenModal] = useState<boolean>(false);
   const { currentPage, totalPage } = pagination;
   const [typeModal, setTypeModal] = useState<string>('detail');
-
-  useEffect(() => {
-    const checkProductIsOutIsStock = products.some((item: Product) => item.quantity === 0);
-    if (checkProductIsOutIsStock) {
-      toast({
-        variant: 'destructive',
-        title: 'Thông báo',
-        description: 'Một số sản phẩm đã hết hàng! Vui lòng nhập hàng mới',
-      });
-    }
-  }, []);
+  const [searchValue, setSearchValue] = useState('');
 
   const handleQuickViewProduct = (product: any) => {
     setTypeModal('detail');
@@ -93,9 +83,20 @@ export default function ProductTable({ products, pagination }: propType) {
     }
   };
 
+  const handleSubmitSearchForm = (e: any) => {
+    e.preventDefault();
+    router.push(`?keyword=${searchValue}`);
+  };
+
   return (
     <>
-      <div className='flex items-center justify-end mb-8'>
+      <div className='flex items-center justify-between mb-8'>
+        <form onSubmit={handleSubmitSearchForm}>
+          <div className='flex items-center gap-x-4'>
+            <Input placeholder='Nhập tên sản phẩm' className='w-[300px]' onChange={(e) => setSearchValue(e.target.value)} />
+            <Button type='submit'>Tìm kiếm</Button>
+          </div>
+        </form>
         <Button asChild>
           <Link href={URL_CREATE_PRODUCT}>Thêm mới</Link>
         </Button>
@@ -114,7 +115,7 @@ export default function ProductTable({ products, pagination }: propType) {
           <TableBody className='text-center'>
             {products?.map((product: Product, index: number) => (
               <TableRow key={product.id}>
-                <TableCell>{index + 1}</TableCell>
+                <TableCell>{currentPage * 10 + index + 1}</TableCell>
                 <TableCell>{product.code}</TableCell>
                 <TableCell>
                   <div className='w-[100px] h-[100px] mx-auto'>
@@ -149,7 +150,7 @@ export default function ProductTable({ products, pagination }: propType) {
                   })}
                 </TableCell>
                 <TableCell>
-                  {product.quantity > 0 ? <Badge status={true} content='Còn hàng' /> : <Badge status={false} content='Hết hàng' />}
+                  {product.quantity > 0 ? <span className='text-green-500'>Còn hàng</span> : <span className='text-red-500'>Đã hết hàng</span>}
                 </TableCell>
                 <TableCell className='w-[100px]'>
                   <DropdownMenu>

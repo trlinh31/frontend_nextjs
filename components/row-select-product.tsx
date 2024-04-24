@@ -1,64 +1,103 @@
 'use client';
+import { useEffect, useState } from 'react';
 import { getProductDetails, getProductsByName } from '@/api/product';
 import { ComboboxComponent } from '@/components/combobox';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Product } from '@/types/product.type';
 import { formatPrice } from '@/utils/formatPrice';
-import { useEffect, useState } from 'react';
+import { useProductId, useProductStore } from '@/zustand/storeProducts';
+import { Button } from '@/components/ui/button';
+import { Trash2 } from 'lucide-react';
 
+interface RowSelectProductProps {
+  index?: number;
+  isStockForm?: boolean;
+  initProduct?: any;
+}
 type ProductOption = {
   value: string;
   label: string;
 };
 
-export default function RowSelectProduct({ setTransactions }: { setTransactions: any }) {
+export default function RowSelectProduct({ index = 0, isStockForm, initProduct }: RowSelectProductProps) {
+  const { productStore, setProductStore, updateProductStore, removeItem } = useProductStore();
+  const { idStore, setIdStore } = useProductId();
+  const [selectedValue, setSelectedValue] = useState(initProduct ? initProduct.id : ''); //Id của sản phẩm khi chọn ở thẻ select
   const [searchKeyword, setSearchKeyword] = useState<string>(''); //Tìm kiếm sử dụng cho thẻ select
-  const [productOptions, setProductOptions] = useState<ProductOption[]>([]); //Danh sách sản phẩm sử dụng cho thẻ select
-  const [product, setProduct] = useState<Product | null>(null); //Lưu trữ thông tin của sản phẩm khi chọn
-  const [selectedValue, setSelectedValue] = useState(''); //Id của sản phẩm khi chọn ở thẻ select
-  const [totalPrice, setTotalPrice] = useState(0); //Tổng tiền của một sản phẩm
-  const [quantity, setQuantity] = useState(0); //Tổng số lượng của một sản phẩm
+  const [product, setProduct] = useState<Product>(); //Lưu trữ thông tin của sản phẩm khi chọn
+  const [productOptions, setProductOptions] = useState<ProductOption[]>(initProduct ? initProduct.product : []); //Danh sách sản phẩm render ra thẻ select
+  const [quantity, setQuantity] = useState(0); //Số lượng của một sản phẩm
 
-  const fetchProduct = async () => {
-    const { data } = await getProductsByName(searchKeyword);
+  useEffect(() => {
+    if (initProduct) {
+      const newObject = {
+        value: initProduct.product.id,
+        label: initProduct.product.name,
+      };
+      setProductOptions([newObject]);
+    }
+  }, []);
+
+  const fetchProductByName = async () => {
+    const { data } = await getProductsByName(initProduct ? initProduct.product.name : searchKeyword);
     if (data) {
-      const options = data.map(({ id, name }: { id: string; name: string }) => ({ value: id, label: name }));
-      setProductOptions(options);
+      let productOptionsData;
+      if (isStockForm) {
+        productOptionsData = data
+          .filter((item: Product) => !idStore.includes(item.id))
+          .map(({ id, name }: { id: string; name: string }) => ({ value: id, label: name }));
+      } else {
+        productOptionsData = data
+          .filter((item: Product) => item.quantity > 0 && !idStore.includes(item.id))
+          .map(({ id, name }: { id: string; name: string }) => ({ value: id, label: name }));
+      }
+      setProductOptions(productOptionsData);
     }
   };
+
+  useEffect(() => {
+    fetchProductByName();
+  }, [searchKeyword]);
 
   const fetchDetailProduct = async () => {
     if (selectedValue) {
       const { data } = await getProductDetails(selectedValue);
-      setProduct(data);
+      if (data) {
+        setProduct(data);
+      }
     }
   };
 
-  useEffect(() => {
-    fetchProduct();
-  }, [searchKeyword]);
+  const handleProductChange = () => {
+    if (!product) return;
+    updateProductStore(index, { product: { id: selectedValue }, quantity, total: product.importPrice * quantity });
+  };
 
   useEffect(() => {
     fetchDetailProduct();
-    setQuantity(0);
-    setTotalPrice(0);
   }, [selectedValue]);
 
+  useEffect(() => {
+    if (product) {
+      handleProductChange();
+    }
+  }, [product]);
+
   const handleQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuantity(parseInt(event.target.value));
-    const totalPriceProduct = product ? product.importPrice * parseInt(event.target.value) : 0;
-    setTotalPrice(totalPriceProduct);
+    const valueInput = Number(event.target.value);
+    if (!product) return;
+    if (product && !isStockForm && valueInput > product.quantity) return;
+    setQuantity(valueInput);
+    setProductStore({
+      product: { id: selectedValue },
+      quantity: valueInput,
+      total: valueInput * product.importPrice,
+    });
   };
 
   const handleProductSelect = (productId: string) => {
     setSelectedValue(productId);
-  };
-
-  const handleSubmit = () => {
-    if (selectedValue && quantity > 0) {
-      setTransactions(selectedValue, quantity, totalPrice);
-    }
+    setIdStore(productId);
   };
 
   return (
@@ -71,14 +110,12 @@ export default function RowSelectProduct({ setTransactions }: { setTransactions:
           setKeySearch={setSearchKeyword}
         />
       </div>
+      <div className='col-span-1 flex items-center'>{product ? product.quantity : 0}</div>
       <div className='col-span-2 flex items-center'>{formatPrice(product ? product.importPrice : 0)}</div>
       <div className='col-span-2'>
-        <Input type='number' min={1} onChange={handleQuantityChange} value={quantity} max={product?.quantity} className='w-[100px]' />
+        <Input type='number' min={0} onChange={handleQuantityChange} value={initProduct ? initProduct.quantity : quantity} className='w-[100px]' />
       </div>
-      <div className='col-span-2 flex items-center'>{formatPrice(totalPrice)}</div>
-      <div className='col-span-1'>
-        <Button onClick={() => handleSubmit()}>Thêm</Button>
-      </div>
+      <div className='col-span-2 flex items-center'>{formatPrice(product ? product.importPrice * quantity : 0)}</div>
     </>
   );
 }

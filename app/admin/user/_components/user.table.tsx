@@ -47,7 +47,7 @@ export default function UserTable({ users, pagination }: propType) {
         <TableBody className='text-center'>
           {users?.map((user: User, index: number) => (
             <TableRow key={user.id}>
-              <TableCell>{index + 1}</TableCell>
+              <TableCell>{currentPage * 10 + index + 1}</TableCell>
               <TableCell>{user.username}</TableCell>
               <TableCell>{user.fullName}</TableCell>
               <TableCell>{user.email}</TableCell>

@@ -39,19 +39,14 @@ export default function UserForm({ initUser, groups }: FormPropsType) {
   });
 
   const onSubmit = async (data: UserSchemaType) => {
-    console.log(data);
-
     const successMessage = initUser ? 'Cập nhật tài khoản thành công' : 'Thêm mới tài khoản thành công';
-    try {
-      const res = await createOrUpdateUser(data);
-      if (res === 200) {
-        toast({ description: successMessage });
-        router.refresh();
-        router.push(URL_SHOW_USER);
-      }
-    } catch {
+    const res = await createOrUpdateUser(data);
+    if (res !== 200) {
       toast({ description: 'Thêm tài khoản thất bại' });
+      return;
     }
+    toast({ description: successMessage });
+    router.push(URL_SHOW_USER);
   };
 
   return (

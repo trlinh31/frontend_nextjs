@@ -23,20 +23,16 @@ export default function GroupTable({ groups }: propType) {
   const router = useRouter();
 
   const handleDeleteGroup = async (id: string) => {
-    try {
-      const res = await deleteGroup(id);
-      if (res === 200) {
-        toast({
-          description: 'Xoá nhóm tài khoản thành công',
-        });
-        router.refresh();
-      }
-    } catch (error) {
-      console.log(error);
+    const res = await deleteGroup(id);
+    if (res !== 200) {
       toast({
         description: 'Xoá nhóm tài khoản thất bại',
       });
+      return;
     }
+    toast({
+      description: 'Xoá nhóm tài khoản thành công',
+    });
   };
 
   return (

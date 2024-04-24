@@ -4,13 +4,15 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { URL_CREATE_STOCK } from '@/constants/url';
+import { URL_CREATE_STOCK, URL_UPDATE_STOCK } from '@/constants/url';
 import PaginationSection from '@/components/pagination';
 import { formatPrice } from '@/utils/formatPrice';
 import { useState } from 'react';
 import { Stock } from '@/types/stock';
 import { formatDate } from '@/utils/formatDate';
 import StockModal from '@/app/admin/stock/_components/stock.modal';
+import { Input } from '@/components/ui/input';
+import { useRouter } from 'next/navigation';
 
 type propType = {
   stocks: Stock[] | [];
@@ -20,21 +22,34 @@ type propType = {
   };
 };
 
-const tableHeader = ['STT', 'Mã phiếu', 'Tổng hoá đơn', 'Ngày tạo', ''];
+const tableHeader = ['STT', 'Mã phiếu', 'Tổng hoá đơn', 'Thời gian tạo phiếu nhập', ''];
 
 export default function StockTable({ stocks, pagination }: propType) {
+  const router = useRouter();
   const { currentPage, totalPage } = pagination;
   const [stock, setStock] = useState<Stock | any>();
   const [isOpenModal, setOpenModal] = useState<boolean>(false);
+  const [searchValue, setSearchValue] = useState('');
 
   const handleQuickViewTransaction = (stock: Stock) => {
     setStock(stock);
     setOpenModal(!isOpenModal);
   };
 
+  const handleSubmitSearchForm = (e: any) => {
+    e.preventDefault();
+    router.push(`?keyword=${searchValue}`);
+  };
+
   return (
     <>
-      <div className='flex items-center justify-end mb-8'>
+      <div className='flex items-center justify-between mb-8'>
+        <form onSubmit={handleSubmitSearchForm}>
+          <div className='flex items-center gap-x-4'>
+            <Input placeholder='Nhập mã phiếu' className='w-[300px]' onChange={(e) => setSearchValue(e.target.value)} />
+            <Button type='submit'>Tìm kiếm</Button>
+          </div>
+        </form>
         <Button asChild>
           <Link href={URL_CREATE_STOCK}>Thêm mới</Link>
         </Button>
@@ -52,7 +67,7 @@ export default function StockTable({ stocks, pagination }: propType) {
         <TableBody className='text-center'>
           {stocks?.map((item: Stock, index: number) => (
             <TableRow key={item.id}>
-              <TableCell className='font-medium'>{index + 1}</TableCell>
+              <TableCell className='font-medium'>{currentPage * 10 + index + 1}</TableCell>
               <TableCell>{item.code}</TableCell>
               <TableCell>{formatPrice(item.billInvoice)}</TableCell>
               <TableCell>{formatDate(item.createdDate)}</TableCell>
@@ -63,6 +78,10 @@ export default function StockTable({ stocks, pagination }: propType) {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuItem onClick={() => handleQuickViewTransaction(item)}>Xem</DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href={URL_UPDATE_STOCK + item.id}>Cập nhật</Link>
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>

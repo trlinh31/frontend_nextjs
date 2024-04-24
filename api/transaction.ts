@@ -4,8 +4,8 @@ import { TransactionSchemaType } from '@/lib/form-schema';
 import { cookies } from 'next/headers';
 import { BASE_URL } from '@/api';
 
-export const getAllTransactions = async (page = 0) => {
-  const url = `${BASE_URL}/transaction/list?page=${page}`;
+export const getAllTransactions = async (keyword = '', page = 0) => {
+  const url = `${BASE_URL}/transaction/list?keyword=${keyword}&page=${page}`;
 
   try {
     const response = await fetch(url, {

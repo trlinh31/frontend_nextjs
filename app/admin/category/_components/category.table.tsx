@@ -27,20 +27,16 @@ export default function CategoryTable({ categories, pagination }: CategoryPropTy
   const router = useRouter();
 
   const handleDeleteCategory = async (id: string) => {
-    try {
-      const res = await deleteCategory(id);
-      if (res === 200) {
-        toast({
-          description: 'Xoá danh mục thành công',
-        });
-        router.refresh();
-      }
-    } catch (error) {
-      console.log(error);
+    const res = await deleteCategory(id);
+    if (res !== 200) {
       toast({
         description: 'Xoá danh mục thất bại',
       });
+      return;
     }
+    toast({
+      description: 'Xoá danh mục thành công',
+    });
   };
 
   return (
@@ -63,7 +59,7 @@ export default function CategoryTable({ categories, pagination }: CategoryPropTy
         <TableBody className='text-center'>
           {categories?.map((category: Category, index: number) => (
             <TableRow key={category.id}>
-              <TableCell>{index + 1}</TableCell>
+              <TableCell>{currentPage * 10 + index + 1}</TableCell>
               <TableCell>{category.code}</TableCell>
               <TableCell>{category.name}</TableCell>
               <TableCell>{category.parentsCategory?.code}</TableCell>

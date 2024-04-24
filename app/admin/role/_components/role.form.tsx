@@ -30,16 +30,13 @@ export default function RoleForm({ initRole }: FormPropsType) {
 
   const onSubmit = async (formData: RoleSchemaType) => {
     const successMessage = initRole ? 'Cập nhật vai trò thành công' : 'Thêm mới vai trò thành công';
-    try {
-      const res = await createOrUpdateRole(formData);
-      if (res === 200) {
-        toast({ description: successMessage });
-        router.refresh();
-        router.push(URL_SHOW_ROLE);
-      }
-    } catch {
+    const res = await createOrUpdateRole(formData);
+    if (res !== 200) {
       toast({ description: 'Thêm vai trò thất bại' });
+      return;
     }
+    toast({ description: successMessage });
+    router.push(URL_SHOW_ROLE);
   };
 
   return (

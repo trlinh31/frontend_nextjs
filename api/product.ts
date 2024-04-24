@@ -4,8 +4,8 @@ import { ProductSchemaType } from '@/lib/form-schema';
 import { cookies } from 'next/headers';
 import { BASE_URL } from '@/api';
 
-export const getAllProducts = async (page = 0) => {
-  const url = `${BASE_URL}/product/list?page=${page}`;
+export const getAllProducts = async (keyword = '', page = 0) => {
+  const url = `${BASE_URL}/product/list?keyword=${keyword}&page=${page}`;
 
   try {
     const response = await fetch(url, {

@@ -37,16 +37,13 @@ export default function CustomerForm({ initCustomer }: FormPropsType) {
 
   const onSubmit = async (data: CustomerSchemaType) => {
     const successMessage = initCustomer ? 'Cập nhật khách hàng thành công' : 'Thêm mới khách hàng thành công';
-    try {
-      const res = await createOrUpdateCustomer(data);
-      if (res === 200) {
-        toast({ description: successMessage });
-        router.refresh();
-        router.push(URL_SHOW_CUSTOMER);
-      }
-    } catch {
+    const res = await createOrUpdateCustomer(data);
+    if (res !== 200) {
       toast({ description: 'Thêm khách hàng thất bại' });
+      return;
     }
+    toast({ description: successMessage });
+    router.push(URL_SHOW_CUSTOMER);
   };
 
   return (

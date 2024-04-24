@@ -3,6 +3,7 @@ import StarRating from '@/components/star-rating';
 import { DialogContent, Dialog } from '@/components/ui/dialog';
 import { Category } from '@/types/category.type';
 import { ProductImagesType } from '@/types/product.type';
+import { formatDate } from '@/utils/formatDate';
 import { formatPrice } from '@/utils/formatPrice';
 
 type ModalProps = {
@@ -75,9 +76,11 @@ export default function ProductModal({ data, isOpen, setOpen, type }: ModalProps
               <ul className='space-y-3'>
                 {data?.map((item: any) => (
                   <li key={item.id} className='bg-white p-3 rounded-xl'>
-                    <p className='text-sm text-neutral-500'>{item.customer.username}</p>
+                    <p className='text-sm text-neutral-500'>
+                      {item.customer.username} | {formatDate(item.createdDate)}
+                    </p>
                     <StarRating rating={item.rating} />
-                    <p>{item.comment}</p>
+                    <p className='text-xl'>{item.comment}</p>
                   </li>
                 ))}
               </ul>

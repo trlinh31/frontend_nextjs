@@ -5,7 +5,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { ProductSchemaType, ProductSchema } from '@/lib/form-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRef, useState } from 'react';
-import { Checkbox } from '@/components/ui/checkbox';
 import { useForm } from 'react-hook-form';
 import { Product } from '@/types/product.type';
 import Link from 'next/link';
@@ -30,6 +29,13 @@ export default function ProductForm({ initProduct, categories }: FormPropsType) 
   const [dataCheckbox, setDataCheckbox] = useState<string[]>(initialCategories || []);
   const [images, setImages] = useState<any>(initProduct?.images || []);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [imageErrors, setImageErrors] = useState<boolean[]>(initProduct?.images?.map(() => false) || []);
+
+  const handleImageError = (index: number) => {
+    const updatedErrors = [...imageErrors];
+    updatedErrors[index] = true;
+    setImageErrors(updatedErrors);
+  };
 
   const form = useForm<ProductSchemaType>({
     resolver: zodResolver(ProductSchema),
@@ -88,16 +94,13 @@ export default function ProductForm({ initProduct, categories }: FormPropsType) 
       data.productCategories = dataCheckbox;
     }
 
-    try {
-      const res = await createOrUpdateProduct(data);
-      if (res === 200) {
-        toast({ description: successMessage });
-        router.refresh();
-        router.push(URL_SHOW_PRODUCT);
-      }
-    } catch {
-      toast({ description: 'Thêm khách hàng thất bại' });
+    const res = await createOrUpdateProduct(data);
+    if (res !== 200) {
+      toast({ description: 'Thêm sản phẩm thất bại' });
+      return;
     }
+    toast({ description: successMessage });
+    router.push(URL_SHOW_PRODUCT);
   };
 
   const checkUrlImage = (url: string) => {
@@ -108,18 +111,22 @@ export default function ProductForm({ initProduct, categories }: FormPropsType) 
     <>
       <div className='mt-10 space-y-4'>
         <div className='flex gap-x-4'>
-          {images.map((item: any, index: number) => (
-            <div key={index} className='relative w-[200px] h-[200px]'>
-              <img
-                src={`${checkUrlImage(item.name) ? item.name : '/' + item.name}`}
-                className='absolute object-cover top-0 left-0 w-full h-full'
-                alt={item.name}
-              />
-              <Button variant={'destructive'} className='absolute top-1 right-1' size={'icon'} onClick={() => handleDeleteImage(index)}>
-                <Trash2 />
-              </Button>
-            </div>
-          ))}
+          {images.map(
+            (item: any, index: number) =>
+              !imageErrors[index] && (
+                <div key={index} className='relative w-[200px] h-[200px]'>
+                  <img
+                    src={`${checkUrlImage(item.name) ? item.name : '/' + item.name}`}
+                    className='absolute object-cover top-0 left-0 w-full h-full'
+                    alt={item.name}
+                    onError={() => handleImageError(index)}
+                  />
+                  <Button variant={'destructive'} className='absolute top-1 right-1' size={'icon'} onClick={() => handleDeleteImage(index)}>
+                    <Trash2 />
+                  </Button>
+                </div>
+              )
+          )}
         </div>
         <Form {...form}>
           <form

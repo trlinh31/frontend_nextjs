@@ -36,16 +36,13 @@ export default function GroupForm({ initGroup, roles }: FormPropsType) {
     const successMessage = initGroup ? 'Cập nhật nhóm tài khoản thành công' : 'Thêm mới nhóm tài khoản thành công';
     formData.roles = formData.roles.map((id) => ({ id }));
 
-    try {
-      const res = await createOrUpdateGroup(formData);
-      if (res === 200) {
-        toast({ description: successMessage });
-        router.refresh();
-        router.push(URL_SHOW_GROUP);
-      }
-    } catch {
+    const res = await createOrUpdateGroup(formData);
+    if (res !== 200) {
       toast({ description: 'Thêm nhóm tài khoản thất bại' });
+      return;
     }
+    toast({ description: successMessage });
+    router.push(URL_SHOW_GROUP);
   };
 
   return (

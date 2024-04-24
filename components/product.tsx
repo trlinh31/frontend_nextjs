@@ -21,7 +21,7 @@ export default function ProductItem({ product }: { product: Product }) {
       <div>
         <div className='aspect-square overflow-hidden'>
           <NextImage
-            src={'/' + product.images[0].name}
+            src={'/' + product.images[0]?.name}
             alt={product.name}
             width={512}
             height={512}
@@ -39,7 +39,11 @@ export default function ProductItem({ product }: { product: Product }) {
             <h3 className='mt-1 text-sm font-semibold text-neutral-900'>{formatPrice(product.price)}</h3>
           </div>
           <div className='grid mt-2'>
-            <Button onClick={() => handleAddProductToCart(product)} disabled={product.quantity === 0} className='uppercase'>
+            <Button
+              variant={product.quantity === 0 ? 'destructive' : 'default'}
+              onClick={() => handleAddProductToCart(product)}
+              disabled={product.quantity === 0}
+              className='uppercase'>
               {product.quantity === 0 ? 'Hết hàng' : 'Mua ngay'}
             </Button>
           </div>

@@ -46,3 +46,22 @@ export const getProductFeedbacks = async (id: string) => {
     return { data: null };
   }
 };
+
+export const createRating = async (rating: any) => {
+  const url = `${BASE_URL}/rating/create`;
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(rating),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${cookies().get('accessToken')?.value}`,
+      },
+    });
+    return response.status;
+  } catch (error) {
+    console.error(error);
+  } finally {
+    revalidateTag('groups');
+  }
+};

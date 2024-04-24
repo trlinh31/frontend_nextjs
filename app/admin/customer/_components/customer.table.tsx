@@ -27,24 +27,16 @@ export default function CustomerTable({ customers, pagination }: CustomerPropTyp
   const { currentPage, totalPage } = pagination;
 
   const handleDeleteCustomer = async (id: string) => {
-    console.log(id);
-
-    try {
-      const res = await deleteCustomer(id);
-      console.log('Status', res);
-
-      if (res === 200) {
-        toast({
-          description: 'Xoá khách hàng thành công',
-        });
-        router.refresh();
-      }
-    } catch (error) {
-      console.log(error);
+    const res = await deleteCustomer(id);
+    if (res !== 200) {
       toast({
         description: 'Xoá khách hàng thất bại',
       });
+      return;
     }
+    toast({
+      description: 'Xoá khách hàng thành công',
+    });
   };
 
   return (
@@ -67,7 +59,7 @@ export default function CustomerTable({ customers, pagination }: CustomerPropTyp
         <TableBody className='text-center'>
           {customers?.map((item: Customer, index: number) => (
             <TableRow key={item.id}>
-              <TableCell className='font-medium'>{index + 1}</TableCell>
+              <TableCell className='font-medium'>{currentPage * 10 + index + 1}</TableCell>
               <TableCell>{item.username}</TableCell>
               <TableCell>{item.fullName}</TableCell>
               <TableCell>{item.gender}</TableCell>

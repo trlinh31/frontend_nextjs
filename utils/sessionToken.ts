@@ -17,13 +17,14 @@ export const deleteToken = async () => {
 
 type DecodedToken = {
   exp: number;
+  iat: number;
   sub: string;
   roles: string[];
 };
 export const decodeToken = (token: string): DecodedToken | null => {
   try {
     const decode = jwt.decode(token) as DecodedToken;
-    return { exp: decode.exp, sub: decode.sub, roles: decode.roles };
+    return { exp: decode.exp, iat: decode.iat, sub: decode.sub, roles: decode.roles };
   } catch {
     return null;
   }

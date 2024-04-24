@@ -1,11 +1,16 @@
 'use client';
-import Badge from '@/components/badge';
-import { DialogContent, Dialog } from '@/components/ui/dialog';
+import { cancelTransaction, confirmTransaction, deleteTransaction } from '@/api/transaction';
+import { Button } from '@/components/ui/button';
+import { DialogContent, Dialog, DialogFooter } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { formatPrice } from '@/utils/formatPrice';
+import { useToast } from '@/components/ui/use-toast';
+import { Transaction } from '@/types/transaction.type';
+import { useState } from 'react';
+import ConfirmDialog from '@/components/alert-dialog';
 
 type ModalProps = {
-  transaction: any;
+  transaction: Transaction;
   isOpen: boolean;
   setOpen: any;
 };
@@ -16,12 +21,63 @@ const statusTransaction = (status: number) => {
       return 'Đã huỷ';
     case 1:
       return 'Chờ xác nhận';
+    case 2:
+      return 'Đã xác nhận';
     default:
-      return 'Hoàn thành';
+      return 'Đã nhận hàng';
   }
 };
 
 export default function TransactionModal({ transaction, isOpen, setOpen }: ModalProps) {
+  const [isOpenConfirm, setIsOpenConfirm] = useState(false);
+  const [isOpenCancel, setIsOpenCancel] = useState(false);
+  const [isOpenDelete, setIsOpenDelete] = useState(false);
+  const { toast } = useToast();
+
+  const handleConfirmTransaction = async () => {
+    const res = await confirmTransaction(transaction.id);
+    if (res !== 200) {
+      toast({
+        variant: 'destructive',
+        description: 'Xác nhận đơn hàng thất bại',
+      });
+      return;
+    }
+    toast({
+      description: 'Xác nhận đơn hàng thành công',
+    });
+    setOpen(false);
+  };
+
+  const handleCancelTransaction = async () => {
+    const res = await cancelTransaction(transaction.id);
+    if (res !== 200) {
+      toast({
+        variant: 'destructive',
+        description: 'Huỷ đơn hàng thất bại',
+      });
+      return;
+    }
+    toast({
+      description: 'Huỷ đơn hàng thành công',
+    });
+    setOpen(false);
+  };
+
+  const handleDeleteTransaction = async () => {
+    const res = await deleteTransaction(transaction.id);
+    if (res !== 200) {
+      toast({
+        description: 'Xoá đơn hàng thất bại',
+      });
+      return;
+    }
+    toast({
+      description: 'Xoá đơn hàng thành công',
+    });
+    setOpen(false);
+  };
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={setOpen}>
@@ -59,7 +115,7 @@ export default function TransactionModal({ transaction, isOpen, setOpen }: Modal
           </div>
           <div className='space-y-4'>
             <h2 className='text-2xl font-bold text-gray-600 uppercase'>Thông tin đơn hàng</h2>
-            <Table className='border'>
+            <Table className='border text-black'>
               <TableHeader>
                 <TableRow>
                   <TableHead className='text-center'>STT</TableHead>
@@ -71,7 +127,7 @@ export default function TransactionModal({ transaction, isOpen, setOpen }: Modal
               </TableHeader>
               <TableBody className='text-center'>
                 {transaction?.transactionDetails?.map((item: any, index: number) => (
-                  <TableRow>
+                  <TableRow key={item.id}>
                     <TableCell>{index + 1}</TableCell>
                     <TableCell>{item.product.name}</TableCell>
                     <TableCell>{item.quantity}</TableCell>
@@ -88,8 +144,48 @@ export default function TransactionModal({ transaction, isOpen, setOpen }: Modal
               </TableFooter>
             </Table>
           </div>
+          <DialogFooter>
+            {transaction?.status === 1 && (
+              <>
+                <Button onClick={() => setIsOpenConfirm(true)}>Xác nhận đơn hàng</Button>
+                <Button variant={'outline'} onClick={() => setIsOpenCancel(true)}>
+                  Huỷ đơn hàng
+                </Button>
+              </>
+            )}
+            {transaction?.status === 1 ||
+              (transaction?.status === 0 && (
+                <Button variant={'ghost'} onClick={() => setIsOpenDelete(true)}>
+                  Xoá đơn hàng
+                </Button>
+              ))}
+          </DialogFooter>
         </DialogContent>
       </Dialog>
+      {isOpenConfirm && (
+        <ConfirmDialog
+          message='Bạn có muốn xác nhận đơn hàng'
+          isOpenConfirm={isOpenConfirm}
+          setIsOpenConfirm={setIsOpenConfirm}
+          onConfirm={handleConfirmTransaction}
+        />
+      )}
+      {isOpenCancel && (
+        <ConfirmDialog
+          message='Bạn có muốn huỷ đơn hàng'
+          isOpenConfirm={isOpenCancel}
+          setIsOpenConfirm={setIsOpenCancel}
+          onConfirm={handleCancelTransaction}
+        />
+      )}
+      {isOpenDelete && (
+        <ConfirmDialog
+          message='Bạn có muốn xoá đơn hàng'
+          isOpenConfirm={isOpenDelete}
+          setIsOpenConfirm={setIsOpenDelete}
+          onConfirm={handleDeleteTransaction}
+        />
+      )}
     </>
   );
 }

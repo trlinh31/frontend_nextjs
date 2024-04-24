@@ -33,16 +33,13 @@ export default function CategoryForm({ initCategory, parentsCategory }: FormProp
 
   const onSubmit = async (formData: CategorySchemaType) => {
     const successMessage = initCategory ? 'Cập nhật danh mục thành công' : 'Thêm mới danh mục thành công';
-    try {
-      const res = await createOrUpdateCategory(formData);
-      if (res === 200) {
-        toast({ description: successMessage });
-        router.refresh();
-        router.push(URL_SHOW_CATEGORY);
-      }
-    } catch {
+    const res = await createOrUpdateCategory(formData);
+    if (res !== 200) {
       toast({ description: 'Thêm danh mục thất bại' });
+      return;
     }
+    toast({ description: successMessage });
+    router.push(URL_SHOW_CATEGORY);
   };
 
   return (
