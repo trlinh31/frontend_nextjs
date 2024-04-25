@@ -26,7 +26,7 @@ export const getAllStocks = async (keyword = '', page = 0) => {
   }
 };
 
-export const createStock = async (data: any) => {
+export const createOrUpdateStock = async (data: any) => {
   const url = `${BASE_URL}/stock/save`;
   try {
     const response = await fetch(url, {
@@ -63,5 +63,23 @@ export const getDetailStock = async (id: string) => {
   } catch (error) {
     console.error('Error fetching data:', error);
     return { data: null };
+  }
+};
+
+export const deleteStock = async (id: string) => {
+  const url = `${BASE_URL}/stock/delete/${id}`;
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${cookies().get('accessToken')?.value}`,
+      },
+    });
+    return response.status;
+  } catch (error) {
+    console.error(error);
+  } finally {
+    revalidateTag('stocks');
   }
 };

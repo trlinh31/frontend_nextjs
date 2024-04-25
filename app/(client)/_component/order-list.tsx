@@ -3,6 +3,8 @@ import ConfirmDialog from '@/app/(client)/_component/confirm';
 import OrderItem from '@/app/(client)/_component/order-item';
 import Rating from '@/app/(client)/_component/rating';
 import { Button } from '@/components/ui/button';
+import { Transaction } from '@/types/transaction.type';
+import { formatPrice } from '@/utils/formatPrice';
 import { useState } from 'react';
 
 const displayStatus = (status: number) => {
@@ -10,13 +12,17 @@ const displayStatus = (status: number) => {
     case 0:
       return 'Đã hủy';
     case 1:
-      return 'Đã đặt';
+      return 'Đang chờ xác nhận';
     case 2:
+      return 'Đang giao hàng';
+    case 3:
       return 'Đã nhận hàng';
   }
 };
 
-export default function OrderListComponent({ orders }: { orders: any[] }) {
+export default function OrderListComponent({ orders }: { orders: Transaction[] }) {
+  console.log(orders);
+
   const [isOpen, setOpen] = useState(false);
   const [isOpenRatingModal, setOpenRatingModal] = useState(false);
   const [idTransaction, setIdTransaction] = useState('');
@@ -34,17 +40,17 @@ export default function OrderListComponent({ orders }: { orders: any[] }) {
 
   return (
     <div className='space-y-8'>
-      {orders?.map((order: any, orderIndex: number) => (
+      {orders?.map((order: Transaction, orderIndex: number) => (
         <div key={orderIndex} className='space-y-4'>
           <p>
-            Order Code: {order.code} | Trạng thái: {displayStatus(order.status)}
+            Order Code: {order.code} | Trạng thái: {displayStatus(order.status)} | Tổng thanh toán: {formatPrice(order.billInvoice)}
           </p>
           <div className='grid grid-cols-6'>
             <div className='col-span-5'>
               {order.transactionDetails.map((item: any, itemIndex: number) => (
                 <div key={itemIndex} className='mb-4'>
                   <OrderItem transaction={item} />
-                  {order.status === 2 && (
+                  {order.status === 3 && (
                     <Button variant={'destructive'} onClick={() => handleShowRatingModal(item.product.id)} className='mt-4'>
                       Đánh giá sản phẩm
                     </Button>
@@ -53,7 +59,7 @@ export default function OrderListComponent({ orders }: { orders: any[] }) {
               ))}
             </div>
             <div className='col-span-1'>
-              {order.status === 1 && <Button onClick={() => handleShowConfirmDialog(order.id)}>Đã nhận được hàng</Button>}
+              {order.status === 2 && <Button onClick={() => handleShowConfirmDialog(order.id)}>Đã nhận được hàng</Button>}
             </div>
           </div>
         </div>

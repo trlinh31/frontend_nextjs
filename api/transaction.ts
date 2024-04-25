@@ -102,6 +102,24 @@ export const cancelTransaction = async (id: string) => {
   }
 };
 
+export const receivedTransaction = async (id: string) => {
+  const url = `http://localhost:8081/customer/transaction/received/${id}`;
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${cookies().get('accessToken')?.value}`,
+      },
+    });
+    return response.status;
+  } catch (error) {
+    console.error(error);
+  } finally {
+    revalidateTag('transactions');
+  }
+};
+
 export const deleteTransaction = async (id: string) => {
   const url = `${BASE_URL}/transaction/delete/${id}`;
   try {

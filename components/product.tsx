@@ -1,3 +1,4 @@
+'use client';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { Product } from '@/types/product.type';
@@ -10,7 +11,15 @@ export default function ProductItem({ product }: { product: Product }) {
   const { toast } = useToast();
 
   const handleAddProductToCart = (product: Product) => {
-    cart.addItem(product);
+    const isSuccess = cart.addItem(product);
+    if (isSuccess === false) {
+      toast({
+        variant: 'destructive',
+        description: 'Số lượng sản phẩm không đủ',
+      });
+      return;
+    }
+
     toast({
       description: 'Thêm sản phẩm vào giỏ hàng thành công',
     });
@@ -36,7 +45,10 @@ export default function ProductItem({ product }: { product: Product }) {
               <h3 className='mt-1 text-sm font-semibold text-neutral-900 line-clamp-1'>{product.name}</h3>
               <p className='mt-1 text-sm font-semibold text-neutral-500'>{product.categories[0].name}</p>
             </div>
-            <h3 className='mt-1 text-sm font-semibold text-neutral-900'>{formatPrice(product.price)}</h3>
+            <div>
+              <h3 className='mt-1 text-sm font-semibold text-neutral-900'>{formatPrice(product.price)}</h3>
+              <p className='mt-1 text-sm font-semibold text-neutral-500 text-end'>Sl: {product.quantity}</p>
+            </div>
           </div>
           <div className='grid mt-2'>
             <Button

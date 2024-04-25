@@ -10,7 +10,7 @@ import { Customer } from '@/types/customer.type';
 import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
 import { URL_SHOW_TRANSACTION } from '@/constants/url';
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import RowSelectProduct from '@/components/row-select-product';
 import { Trash2 } from 'lucide-react';
 import { formatPrice } from '@/utils/formatPrice';
@@ -18,29 +18,18 @@ import Link from 'next/link';
 import { createTransaction } from '@/api/transaction';
 import RowSelectCustomer from '@/components/row-select-customer';
 import { Label } from '@/components/ui/label';
-import { useProductStore } from '@/zustand/storeProducts';
-import { Transaction } from '@/types/transaction.type';
+import Select from 'react-select';
+import { getProductsByName } from '@/api/product';
+import { Product } from '@/types/product.type';
 
 export default function TransactionForm() {
-  const { productStore, calcTotalPrice, removeAllItem } = useProductStore();
+  const id = useId();
   const { toast } = useToast();
   const router = useRouter();
-  const [row, setRow] = useState<any>([]);
   const [customer, setCustomer] = useState<Customer | undefined>();
-
-  const handleButtonAddRow = () => {
-    const newRow = {
-      index: row.length,
-      component: <RowSelectProduct />,
-    };
-    setRow([...row, newRow]);
-  };
-
-  // const handleButtonDeleteRow = (index: number) => {
-  //   const newRow = [...row];
-  //   newRow.splice(index, 1);
-  //   setRow(newRow);
-  // };
+  const [selectedProducts, setSelectedProducts] = useState<any>([]);
+  const [keyword, setKeyword] = useState('');
+  const [searchResults, setSearchResults] = useState<any>([]);
 
   const form = useForm<TransactionSchemaType>({
     resolver: zodResolver(TransactionSchema),
@@ -59,30 +48,98 @@ export default function TransactionForm() {
   useEffect(() => {
     form.setValue('customer.username', customer?.username ?? '');
     form.setValue('name', customer?.fullName ?? '');
-    form.setValue('email', customer?.email ?? 'aaa@gmail.com');
-    form.setValue('address', customer?.address ?? 'aaaa');
+    form.setValue('email', customer?.email ?? '');
+    form.setValue('address', customer?.address ?? '');
   }, [customer, form]);
 
-  const onSubmit = async (data: TransactionSchemaType) => {
-    if (productStore.length > 0) {
-      const successMessage = 'Tạo đơn hàng hàng thành công';
-      data.transactionDetails = productStore;
-      console.log(data);
-      const res = await createTransaction(data);
-      if (res !== 200) {
-        toast({ variant: 'destructive', description: 'Tạo đơn hàng hàng thất bại' });
-        return;
+  const handleRemoveProduct = (index: number) => {
+    const updatedProducts = [...selectedProducts];
+    updatedProducts.splice(index, 1);
+    setSelectedProducts(updatedProducts);
+  };
+
+  useEffect(() => {
+    handleSearchChange();
+  }, [keyword]);
+
+  const handleSearchChange = async () => {
+    try {
+      const { data } = await getProductsByName(keyword);
+      if (data) {
+        const productOptions = data
+          .filter((item: Product) => !selectedProducts.some((product: any) => product.value === item.id) && item.quantity > 0)
+          .map(({ id, name, importPrice, quantity }: any) => ({
+            value: id,
+            label: name,
+            price: importPrice,
+            quantity,
+            quantityToBuy: 0,
+          }));
+        setSearchResults(productOptions);
       }
-      removeAllItem();
-      toast({ description: successMessage });
-      router.push(URL_SHOW_TRANSACTION);
-    } else {
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      setSearchResults([]);
+    }
+  };
+
+  const handleProductChange = (selectedOption: any) => {
+    setSelectedProducts([...selectedProducts, selectedOption]);
+    setSearchResults([]);
+  };
+
+  // Xử lý thay đổi số lượng sản phẩm cần mua
+  const handleQuantityChange = (index: number, newQuantity: number) => {
+    if (newQuantity > selectedProducts[index].quantity) return;
+    const updatedProducts = [...selectedProducts];
+    updatedProducts[index].quantityToBuy = newQuantity;
+    setSelectedProducts(updatedProducts);
+  };
+
+  const totalPrice = selectedProducts.reduce((total: number, product: any) => {
+    return total + product.price * product.quantityToBuy;
+  }, 0);
+
+  const onSubmit = async (data: TransactionSchemaType) => {
+    if (selectedProducts.length === 0) {
       toast({
         variant: 'destructive',
         description: 'Vui lòng chọn sản phẩm',
       });
       return;
     }
+
+    const payload = selectedProducts.map(({ value, label, price, quantity, quantityToBuy }: any) => ({
+      product: {
+        id: value,
+      },
+      quantity: quantityToBuy,
+      total: price * quantityToBuy,
+    }));
+
+    const isCheck = payload.some((item: any) => item.quantity === 0);
+    if (isCheck) {
+      toast({
+        variant: 'destructive',
+        description: 'Vui lòng nhập số lượng sản phẩm',
+      });
+      return;
+    }
+
+    data.transactionDetails = payload;
+
+    const res = await createTransaction(data);
+    if (res !== 200) {
+      toast({
+        variant: 'destructive',
+        description: 'Thêm đơn hàng thất bại',
+      });
+      return;
+    }
+    toast({
+      description: 'Thêm đơn hàng thành công',
+    });
+    router.push(URL_SHOW_TRANSACTION);
   };
 
   return (
@@ -154,36 +211,64 @@ export default function TransactionForm() {
                   )}
                 />
               </div>
-              <div className='space-x-3'>
-                <Button type='button' variant='secondary' asChild>
-                  <Link href={URL_SHOW_TRANSACTION}>Huỷ</Link>
-                </Button>
-                <Button type='submit'>Lưu</Button>
+              <div className='mt-10 space-y-6'>
+                <Select
+                  instanceId={id}
+                  onChange={handleProductChange}
+                  onInputChange={setKeyword}
+                  options={searchResults}
+                  getOptionValue={(option) => option.value}
+                  getOptionLabel={(option) => option.label}
+                  placeholder={'Chọn sản phẩm'}
+                  isClearable={false}
+                  isSearchable
+                />
+                <div className='grid grid-cols-12 border-b pb-4 font-bold'>
+                  <div className='col-span-1'>Xoá</div>
+                  <div className='col-span-4'>Tên sản phẩm</div>
+                  <div className='col-span-1'>SL tồn</div>
+                  <div className='col-span-2'>Đơn giá</div>
+                  <div className='col-span-2'>Số lượng</div>
+                  <div className='col-span-2'>Thành tiền</div>
+                </div>
+                {selectedProducts.map((product: any, index: number) => (
+                  <div key={id + index} className='grid grid-cols-12'>
+                    <div className='col-span-1 flex items-center'>
+                      <button onClick={() => handleRemoveProduct(index)}>
+                        <Trash2 />
+                      </button>
+                    </div>
+                    <div className='col-span-4 flex items-center'>{product.label}</div>
+                    <div className='col-span-1 flex items-center'>{product.quantity}</div>
+                    <div className='col-span-2 flex items-center'>{formatPrice(product.price)}</div>
+                    <div className='col-span-2 flex items-center'>
+                      <Input
+                        type='number'
+                        className='w-[100px]'
+                        value={product.quantityToBuy || 0}
+                        min={0}
+                        onChange={(e) => handleQuantityChange(index, Number(e.target.value))}
+                      />
+                    </div>
+                    <div className='col-span-2 flex items-center'>{formatPrice(product.price * product.quantityToBuy)}</div>
+                  </div>
+                ))}
+              </div>
+              <div className='flex items-center justify-between'>
+                <div className='flex items-center gap-x-4'>
+                  <Button type='button' variant='secondary' asChild>
+                    <Link href={URL_SHOW_TRANSACTION}>Huỷ</Link>
+                  </Button>
+                  <Button type='submit'>Lưu</Button>
+                </div>
+                <div>
+                  <h3 className='font-bold text-2xl'>
+                    Tổng tiền: <span>{formatPrice(totalPrice)}</span>
+                  </h3>
+                </div>
               </div>
             </form>
           </Form>
-          <div className='grid grid-cols-12 w-full border-b pb-3 text-gray-400'>
-            <div className='col-span-4'>Sản phẩm</div>
-            <div className='col-span-2'>SL tồn</div>
-            <div className='col-span-2'>Giá Bán</div>
-            <div className='col-span-2'>Số lượng</div>
-            <div className='col-span-2'>Thành tiền</div>
-          </div>
-          {row.map((item: any, index: number) => (
-            <div key={index}>
-              <RowSelectProduct index={index} isStockForm={false} />
-            </div>
-          ))}
-        </div>
-        <div className='flex items-start justify-between mt-10'>
-          <Button variant={'outline'} onClick={handleButtonAddRow}>
-            Thêm sản phẩm
-          </Button>
-          <div>
-            <h3 className='font-bold text-2xl'>
-              Tổng tiền: <span>{formatPrice(calcTotalPrice())}</span>
-            </h3>
-          </div>
         </div>
       </div>
     </>

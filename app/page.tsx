@@ -7,7 +7,7 @@ import { redirect } from 'next/navigation';
 
 type paramsProps = {
   searchParams: {
-    [key: string]: number;
+    [key: string]: string | number;
   };
 };
 
@@ -21,7 +21,7 @@ export default async function Home({ searchParams }: paramsProps) {
   let products: Product[] = [];
   let totalPage = 0;
   const page = searchParams?.page ?? 0;
-  const { data, totalPages } = await getAllProducts(page);
+  const { data, totalPages } = await getAllProducts('', +page);
   products = data && [...data.filter((item: Product) => item.enable)];
   totalPage = totalPages;
 

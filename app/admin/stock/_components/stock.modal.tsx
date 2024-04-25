@@ -1,10 +1,14 @@
 'use client';
-import Badge from '@/components/badge';
-import { DialogContent, Dialog } from '@/components/ui/dialog';
+import { deleteStock } from '@/api/stock';
+import ConfirmDialog from '@/components/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { DialogContent, Dialog, DialogFooter } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useToast } from '@/components/ui/use-toast';
 import { Stock } from '@/types/stock';
 import { formatDate } from '@/utils/formatDate';
 import { formatPrice } from '@/utils/formatPrice';
+import { useState } from 'react';
 
 type ModalProps = {
   stock: Stock;
@@ -13,6 +17,23 @@ type ModalProps = {
 };
 
 export default function StockModal({ stock, isOpen, setOpen }: ModalProps) {
+  const { toast } = useToast();
+  const [isOpenDelete, setIsOpenDelete] = useState(false);
+
+  const handleDeleteStock = async () => {
+    const res = await deleteStock(stock.id);
+    if (res !== 200) {
+      toast({
+        description: 'Xoá phiếu nhập hàng thất bại',
+      });
+      return;
+    }
+    toast({
+      description: 'Xoá phiếu nhập hàng thành công',
+    });
+    setOpen(false);
+  };
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={setOpen}>
@@ -58,8 +79,21 @@ export default function StockModal({ stock, isOpen, setOpen }: ModalProps) {
               </TableFooter>
             </Table>
           </div>
+          <DialogFooter>
+            <Button variant={'outline'} onClick={() => setIsOpenDelete(true)}>
+              Xoá phiếu nhập
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
+      {isOpenDelete && (
+        <ConfirmDialog
+          message='Bạn có muốn xoá phiếu nhập hàng'
+          isOpenConfirm={isOpenDelete}
+          setIsOpenConfirm={setIsOpenDelete}
+          onConfirm={handleDeleteStock}
+        />
+      )}
     </>
   );
 }

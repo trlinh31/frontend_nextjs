@@ -6,16 +6,16 @@ import { cookies } from 'next/headers';
 export default async function OrderPage() {
   const token = cookies().get('accessToken')?.value ?? '';
   const decodedToken = decodeToken(token);
-  let order = [];
+  let orders = [];
   if (decodedToken) {
     const { data } = await getOrderHistory(decodedToken.sub);
-    order = data && [...data];
+    orders = data && [...data];
   }
 
   return (
     <div className='container max-w-[1366px] py-20'>
-      <h1 className='font-bold text-2xl uppercase text-neutral-800 pb-10'>Đơn hàng ({order?.length ?? 0})</h1>
-      <OrderList orders={order} />
+      <h1 className='font-bold text-2xl uppercase text-neutral-800 pb-10'>Đơn hàng ({orders?.length ?? 0})</h1>
+      <OrderList orders={orders.reverse()} />
     </div>
   );
 }

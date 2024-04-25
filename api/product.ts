@@ -15,7 +15,6 @@ export const getAllProducts = async (keyword = '', page = 0) => {
         Authorization: `Bearer ${cookies().get('accessToken')?.value}`,
       },
       next: { tags: ['products'] },
-      cache: 'no-store',
     });
 
     const { content, totalPages } = await response.json();
@@ -102,5 +101,26 @@ export const deleteProduct = async (id: string) => {
     console.error(error);
   } finally {
     revalidateTag('products');
+  }
+};
+
+export const outOfStock = async () => {
+  const url = `${BASE_URL}/product/out-of-stock`;
+
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${cookies().get('accessToken')?.value}`,
+      },
+      cache: 'no-store',
+    });
+
+    const products = await response.json();
+    return { data: products };
+  } catch (error) {
+    console.error('Failed to fetch data', error);
+    return { data: null };
   }
 };

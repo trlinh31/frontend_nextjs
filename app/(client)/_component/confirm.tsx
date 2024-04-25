@@ -1,6 +1,5 @@
 'use client';
-
-import { confirmTransaction } from '@/api/transaction';
+import { receivedTransaction } from '@/api/transaction';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,7 +9,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { useRouter } from 'next/navigation';
 
@@ -23,7 +21,7 @@ interface ConfirmProps {
 export default function ConfirmDialog({ isOpen, setOpen, idTransaction }: ConfirmProps) {
   const router = useRouter();
   const handleConfirm = async () => {
-    const response = await confirmTransaction(idTransaction);
+    const response = await receivedTransaction(idTransaction);
     if (response === 200) {
       setOpen(false);
       router.refresh();

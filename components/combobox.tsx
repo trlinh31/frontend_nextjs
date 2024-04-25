@@ -14,8 +14,6 @@ export const ComboboxComponent = ({ options, setSelectedValue, keySearch, setKey
     setSelectedValue(e.value);
   };
 
-  console.log(options[0]);
-
   return (
     <>
       <Select
