@@ -68,6 +68,7 @@ export default function TransactionModal({ transaction, isOpen, setOpen }: Modal
     const res = await deleteTransaction(transaction.id);
     if (res !== 200) {
       toast({
+        variant: 'destructive',
         description: 'Xoá đơn hàng thất bại',
       });
       return;

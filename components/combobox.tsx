@@ -2,12 +2,6 @@
 import React, { useId } from 'react';
 import Select from 'react-select';
 
-const tess = [
-  { value: 'chocolate', label: 'Chocolate' },
-  { value: 'strawberry', label: 'Strawberry' },
-  { value: 'vanilla', label: 'Vanilla' },
-];
-
 export const ComboboxComponent = ({ options, setSelectedValue, keySearch, setKeySearch }: any) => {
   const id = useId();
   const handleChange = (e: any) => {
@@ -25,6 +19,7 @@ export const ComboboxComponent = ({ options, setSelectedValue, keySearch, setKey
         onChange={handleChange}
         isClearable={false}
         isSearchable={true}
+        placeholder={'Chọn khách hàng'}
         options={options}
       />
     </>

@@ -15,13 +15,13 @@ export default async function Header() {
   const user = await decodeToken(accessToken);
 
   let products = [];
-  const { data } = await outOfStock();
-  products = data && [...data];
+  // const { data } = await outOfStock();
+  // products = data && [...data];
 
   return (
     <div className='fixed top-0 left-0 right-0 supports-backdrop-blur:bg-background/60 border-b bg-background/95 backdrop-blur z-20'>
       <nav className='h-14 flex items-center justify-end px-4 gap-x-10'>
-        <Notification products={data} />
+        {/* <Notification products={data} /> */}
         <UserNav user={user} />
         <ThemeToggle />
       </nav>

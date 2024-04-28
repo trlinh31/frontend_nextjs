@@ -35,7 +35,7 @@ export default function CategoryForm({ initCategory, parentsCategory }: FormProp
     const successMessage = initCategory ? 'Cập nhật danh mục thành công' : 'Thêm mới danh mục thành công';
     const res = await createOrUpdateCategory(formData);
     if (res !== 200) {
-      toast({ description: 'Thêm danh mục thất bại' });
+      toast({ variant: 'destructive', description: 'Thêm danh mục thất bại' });
       return;
     }
     toast({ description: successMessage });

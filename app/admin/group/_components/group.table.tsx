@@ -26,6 +26,7 @@ export default function GroupTable({ groups }: propType) {
     const res = await deleteGroup(id);
     if (res !== 200) {
       toast({
+        variant: 'destructive',
         description: 'Xoá nhóm tài khoản thất bại',
       });
       return;

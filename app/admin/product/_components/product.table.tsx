@@ -42,15 +42,14 @@ const tableHeader = [
 ];
 
 export default function ProductTable({ products, pagination }: propType) {
-  const { toast } = useToast();
   const router = useRouter();
-  const [product, setProduct] = useState<any>();
+  const [product, setProduct] = useState<Product>();
   const [isOpenModal, setOpenModal] = useState<boolean>(false);
   const { currentPage, totalPage } = pagination;
   const [typeModal, setTypeModal] = useState<string>('detail');
   const [searchValue, setSearchValue] = useState('');
 
-  const handleQuickViewProduct = (product: any) => {
+  const handleQuickViewProduct = (product: Product) => {
     setTypeModal('detail');
     setProduct(product);
     setOpenModal(!isOpenModal);
@@ -64,23 +63,6 @@ export default function ProductTable({ products, pagination }: propType) {
     setTypeModal('feedbacks');
     setProduct(data);
     setOpenModal(!isOpenModal);
-  };
-
-  const handleDeleteProduct = async (id: string) => {
-    try {
-      const res = await deleteProduct(id);
-      if (res === 200) {
-        toast({
-          description: 'Xoá sản phẩm thành công',
-        });
-        router.refresh();
-      }
-    } catch (error) {
-      console.log(error);
-      toast({
-        description: 'Xoá sản phẩm thất bại',
-      });
-    }
   };
 
   const handleSubmitSearchForm = (e: any) => {
@@ -165,8 +147,6 @@ export default function ProductTable({ products, pagination }: propType) {
                       <DropdownMenuItem asChild>
                         <Link href={URL_UPDATE_PRODUCT + product.id}>Cập nhật</Link>
                       </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => handleDeleteProduct(product.id)}>Xoá</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

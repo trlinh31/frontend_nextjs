@@ -38,7 +38,7 @@ export default function GroupForm({ initGroup, roles }: FormPropsType) {
 
     const res = await createOrUpdateGroup(formData);
     if (res !== 200) {
-      toast({ description: 'Thêm nhóm tài khoản thất bại' });
+      toast({ variant: 'destructive', description: 'Thêm nhóm tài khoản thất bại' });
       return;
     }
     toast({ description: successMessage });

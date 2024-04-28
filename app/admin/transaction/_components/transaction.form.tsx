@@ -214,6 +214,7 @@ export default function TransactionForm() {
               <div className='mt-10 space-y-6'>
                 <Select
                   instanceId={id}
+                  className='text-black'
                   onChange={handleProductChange}
                   onInputChange={setKeyword}
                   options={searchResults}
@@ -225,8 +226,8 @@ export default function TransactionForm() {
                 />
                 <div className='grid grid-cols-12 border-b pb-4 font-bold'>
                   <div className='col-span-1'>Xoá</div>
-                  <div className='col-span-4'>Tên sản phẩm</div>
-                  <div className='col-span-1'>SL tồn</div>
+                  <div className='col-span-3'>Tên sản phẩm</div>
+                  <div className='col-span-2'>SL tồn</div>
                   <div className='col-span-2'>Đơn giá</div>
                   <div className='col-span-2'>Số lượng</div>
                   <div className='col-span-2'>Thành tiền</div>
@@ -234,12 +235,12 @@ export default function TransactionForm() {
                 {selectedProducts.map((product: any, index: number) => (
                   <div key={id + index} className='grid grid-cols-12'>
                     <div className='col-span-1 flex items-center'>
-                      <button onClick={() => handleRemoveProduct(index)}>
+                      <button type='button' onClick={() => handleRemoveProduct(index)}>
                         <Trash2 />
                       </button>
                     </div>
-                    <div className='col-span-4 flex items-center'>{product.label}</div>
-                    <div className='col-span-1 flex items-center'>{product.quantity}</div>
+                    <div className='col-span-3 flex items-center'>{product.label}</div>
+                    <div className='col-span-2 flex items-center'>{product.quantity}</div>
                     <div className='col-span-2 flex items-center'>{formatPrice(product.price)}</div>
                     <div className='col-span-2 flex items-center'>
                       <Input

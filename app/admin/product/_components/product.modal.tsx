@@ -1,10 +1,15 @@
 'use client';
+import { deleteProduct } from '@/api/product';
+import ConfirmDialog from '@/components/alert-dialog';
 import StarRating from '@/components/star-rating';
-import { DialogContent, Dialog } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { DialogContent, Dialog, DialogFooter } from '@/components/ui/dialog';
+import { useToast } from '@/components/ui/use-toast';
 import { Category } from '@/types/category.type';
 import { ProductImagesType } from '@/types/product.type';
 import { formatDate } from '@/utils/formatDate';
 import { formatPrice } from '@/utils/formatPrice';
+import { useState } from 'react';
 
 type ModalProps = {
   data: any;
@@ -14,6 +19,24 @@ type ModalProps = {
 };
 
 export default function ProductModal({ data, isOpen, setOpen, type }: ModalProps) {
+  const [isOpenDelete, setIsOpenDelete] = useState(false);
+  const { toast } = useToast();
+
+  const handleDeleteProduct = async () => {
+    const res = await deleteProduct(data.id);
+    if (res !== 200) {
+      toast({
+        variant: 'destructive',
+        description: 'Xoá sản phẩm thất bại',
+      });
+      return;
+    }
+    toast({
+      description: 'Xoá sản phẩm thành công',
+    });
+    setOpen(false);
+  };
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={setOpen}>
@@ -74,20 +97,39 @@ export default function ProductModal({ data, isOpen, setOpen, type }: ModalProps
           ) : (
             <>
               <ul className='space-y-3'>
-                {data?.map((item: any) => (
-                  <li key={item.id} className='bg-white p-3 rounded-xl'>
-                    <p className='text-sm text-neutral-500'>
-                      {item.customer.username} | {formatDate(item.createdDate)}
-                    </p>
-                    <StarRating rating={item.rating} />
-                    <p className='text-xl'>{item.comment}</p>
-                  </li>
-                ))}
+                {data.length > 0 ? (
+                  data?.map((item: any) => (
+                    <li key={item.id} className='bg-white p-3 rounded-xl'>
+                      <p className='text-sm text-neutral-500'>
+                        {item.customer.username} | {formatDate(item.createdDate)}
+                      </p>
+                      <StarRating rating={item.rating} />
+                      <p className='text-xl'>{item.comment}</p>
+                    </li>
+                  ))
+                ) : (
+                  <p className='text-center font-bold text-xl'>Chưa có đánh giá</p>
+                )}
               </ul>
             </>
           )}
+          {type === 'detail' && (
+            <DialogFooter>
+              <Button variant={'outline'} onClick={() => setIsOpenDelete(true)}>
+                Xoá sản phẩm
+              </Button>
+            </DialogFooter>
+          )}
         </DialogContent>
       </Dialog>
+      {isOpenDelete && (
+        <ConfirmDialog
+          message='Bạn có muốn xoá sản phẩm'
+          isOpenConfirm={isOpenDelete}
+          setIsOpenConfirm={setIsOpenDelete}
+          onConfirm={handleDeleteProduct}
+        />
+      )}
     </>
   );
 }

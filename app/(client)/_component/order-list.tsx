@@ -3,6 +3,7 @@ import ConfirmDialog from '@/app/(client)/_component/confirm';
 import OrderItem from '@/app/(client)/_component/order-item';
 import Rating from '@/app/(client)/_component/rating';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/components/ui/use-toast';
 import { Transaction } from '@/types/transaction.type';
 import { formatPrice } from '@/utils/formatPrice';
 import { useState } from 'react';
@@ -21,8 +22,6 @@ const displayStatus = (status: number) => {
 };
 
 export default function OrderListComponent({ orders }: { orders: Transaction[] }) {
-  console.log(orders);
-
   const [isOpen, setOpen] = useState(false);
   const [isOpenRatingModal, setOpenRatingModal] = useState(false);
   const [idTransaction, setIdTransaction] = useState('');
@@ -40,8 +39,8 @@ export default function OrderListComponent({ orders }: { orders: Transaction[] }
 
   return (
     <div className='space-y-8'>
-      {orders?.map((order: Transaction, orderIndex: number) => (
-        <div key={orderIndex} className='space-y-4'>
+      {orders.map((order: Transaction, orderIndex: number) => (
+        <div key={orderIndex} className='space-y-4 border-b pb-4'>
           <p>
             Order Code: {order.code} | Trạng thái: {displayStatus(order.status)} | Tổng thanh toán: {formatPrice(order.billInvoice)}
           </p>
@@ -51,7 +50,7 @@ export default function OrderListComponent({ orders }: { orders: Transaction[] }
                 <div key={itemIndex} className='mb-4'>
                   <OrderItem transaction={item} />
                   {order.status === 3 && (
-                    <Button variant={'destructive'} onClick={() => handleShowRatingModal(item.product.id)} className='mt-4'>
+                    <Button variant={'ghost'} onClick={() => handleShowRatingModal(item.product.id)} className='mt-4'>
                       Đánh giá sản phẩm
                     </Button>
                   )}

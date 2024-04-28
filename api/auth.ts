@@ -31,7 +31,7 @@ export const slideToken = async (token: string) => {
       },
     });
     const { access_token, refresh_token } = await response.json();
-    return { accessToken: access_token, refreshToken: refresh_token, status: response.status };
+    return { newAccessToken: access_token, newRefreshToken: refresh_token, status: response.status };
   } catch (error) {
     console.error('Error fetching data:', error);
     return { accessToken: null, refreshToken: null };

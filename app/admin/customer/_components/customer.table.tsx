@@ -30,6 +30,7 @@ export default function CustomerTable({ customers, pagination }: CustomerPropTyp
     const res = await deleteCustomer(id);
     if (res !== 200) {
       toast({
+        variant: 'destructive',
         description: 'Xoá khách hàng thất bại',
       });
       return;

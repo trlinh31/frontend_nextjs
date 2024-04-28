@@ -20,7 +20,7 @@ export default function StockForm({ initStock }: { initStock?: Stock }) {
   const router = useRouter();
   const [selectedProducts, setSelectedProducts] = useState<any>([]);
   const [keyword, setKeyword] = useState('');
-  const [idProductRemove, setIdProductRemove] = useState<number[]>([]);
+  const [idStockDetail, setIdStockDetail] = useState<number[]>([]);
   const [searchResults, setSearchResults] = useState<any>([]);
 
   useEffect(() => {
@@ -35,15 +35,14 @@ export default function StockForm({ initStock }: { initStock?: Stock }) {
     setSelectedProducts([...oldProduct]);
   }, [initStock]);
 
-  const handleRemoveProduct = (index: number, product: any) => {
-    const idProduct = product.value;
-    setIdProductRemove([...idProductRemove, idProduct]);
+  const handleRemoveProduct = (index: number, idStockDetailParam?: number) => {
+    if (idStockDetailParam) {
+      setIdStockDetail([...idStockDetail, idStockDetailParam]);
+    }
     const updatedProducts = [...selectedProducts];
     updatedProducts.splice(index, 1);
     setSelectedProducts(updatedProducts);
   };
-
-  console.log(idProductRemove);
 
   useEffect(() => {
     handleSearchChange();
@@ -106,7 +105,7 @@ export default function StockForm({ initStock }: { initStock?: Stock }) {
         total: price * quantityToBuy,
         ...(initStock && initStock.stockInDetails[index] && { id: initStock.stockInDetails[index].id }),
       })),
-      deletedDetails: idProductRemove,
+      deletedDetails: idStockDetail,
     };
 
     const isCheck = data.stockInDetails.some((item: any) => item.quantity === 0);
@@ -142,14 +141,15 @@ export default function StockForm({ initStock }: { initStock?: Stock }) {
           options={searchResults}
           getOptionValue={(option) => option.value}
           getOptionLabel={(option) => option.label}
+          className='text-black'
           placeholder={'Chọn sản phẩm'}
           isClearable={false}
           isSearchable
         />
         <div className='grid grid-cols-12 border-b pb-4 font-bold'>
           <div className='col-span-1'>Xoá</div>
-          <div className='col-span-4'>Tên sản phẩm</div>
-          <div className='col-span-1'>SL tồn</div>
+          <div className='col-span-3'>Tên sản phẩm</div>
+          <div className='col-span-2'>SL tồn</div>
           <div className='col-span-2'>Đơn giá</div>
           <div className='col-span-2'>Số lượng</div>
           <div className='col-span-2'>Thành tiền</div>
@@ -157,12 +157,12 @@ export default function StockForm({ initStock }: { initStock?: Stock }) {
         {selectedProducts.map((product: any, index: number) => (
           <div key={id + index} className='grid grid-cols-12'>
             <div className='col-span-1 flex items-center'>
-              <button onClick={() => handleRemoveProduct(index, product)}>
+              <button onClick={() => handleRemoveProduct(index, Number(initStock?.stockInDetails[index]?.id))}>
                 <Trash2 />
               </button>
             </div>
-            <div className='col-span-4 flex items-center'>{product.label}</div>
-            <div className='col-span-1 flex items-center'>{product.quantity}</div>
+            <div className='col-span-3 flex items-center'>{product.label}</div>
+            <div className='col-span-2 flex items-center'>{product.quantity}</div>
             <div className='col-span-2 flex items-center'>{formatPrice(product.price)}</div>
             <div className='col-span-2 flex items-center'>
               <Input

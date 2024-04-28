@@ -17,10 +17,36 @@ export default function PaginationSection({ totalPage, currentPage }: Pagination
     replace(`${pathname}?${params.toString()}`);
   };
 
+  const handleFirstPage = () => {
+    onChangePagination(0);
+  };
+
+  const handleLastPage = () => {
+    onChangePagination(totalPage - 1);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 0) {
+      onChangePagination(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPage - 1) {
+      onChangePagination(currentPage + 1);
+    }
+  };
+
   return (
     <div className='w-full mt-6'>
       <Pagination className='flex justify-end'>
         <PaginationContent>
+          <PaginationItem>
+            <PaginationLink className='cursor-pointer' onClick={handleFirstPage}>
+              First
+            </PaginationLink>
+          </PaginationItem>
+          <PaginationPrevious onClick={handlePrevPage} className={`${currentPage === 0 ? 'cursor-not-allowed' : 'cursor-pointer'}`} />
           {Array(totalPage)
             .fill(0)
             .map((item, index: number) => {
@@ -35,6 +61,12 @@ export default function PaginationSection({ totalPage, currentPage }: Pagination
                 </PaginationItem>
               );
             })}
+          <PaginationNext onClick={handleNextPage} className={`${currentPage === totalPage - 1 ? 'cursor-not-allowed' : 'cursor-pointer'}`} />
+          <PaginationItem>
+            <PaginationLink className='cursor-pointer' onClick={handleLastPage}>
+              Last
+            </PaginationLink>
+          </PaginationItem>
         </PaginationContent>
       </Pagination>
     </div>

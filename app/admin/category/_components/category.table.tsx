@@ -30,6 +30,7 @@ export default function CategoryTable({ categories, pagination }: CategoryPropTy
     const res = await deleteCategory(id);
     if (res !== 200) {
       toast({
+        variant: 'destructive',
         description: 'Xoá danh mục thất bại',
       });
       return;

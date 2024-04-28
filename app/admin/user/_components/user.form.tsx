@@ -42,7 +42,7 @@ export default function UserForm({ initUser, groups }: FormPropsType) {
     const successMessage = initUser ? 'Cập nhật tài khoản thành công' : 'Thêm mới tài khoản thành công';
     const res = await createOrUpdateUser(data);
     if (res !== 200) {
-      toast({ description: 'Thêm tài khoản thất bại' });
+      toast({ variant: 'destructive', description: 'Thêm tài khoản thất bại' });
       return;
     }
     toast({ description: successMessage });

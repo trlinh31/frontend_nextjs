@@ -10,6 +10,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
 
 interface ConfirmProps {
@@ -19,13 +20,22 @@ interface ConfirmProps {
 }
 
 export default function ConfirmDialog({ isOpen, setOpen, idTransaction }: ConfirmProps) {
+  const { toast } = useToast();
   const router = useRouter();
   const handleConfirm = async () => {
     const response = await receivedTransaction(idTransaction);
-    if (response === 200) {
-      setOpen(false);
-      router.refresh();
+    if (response !== 200) {
+      toast({
+        variant: 'destructive',
+        description: 'Xác nhận thất bại',
+      });
+      return;
     }
+    setOpen(false);
+    router.refresh();
+    toast({
+      description: 'Xác nhận đơn hàng thành công',
+    });
   };
 
   return (

@@ -18,8 +18,8 @@ export default function Notification({ products }: { products: Product[] }) {
         <PopoverContent className='w-60 p-3'>
           <ScrollArea className='h-[200px]'>
             <ul>
-              {products.length > 0 &&
-                products.map((product: Product) => (
+              {products?.length > 0 &&
+                products?.reverse().map((product: Product) => (
                   <li className='border-b pb-3 mb-3 pr-3' key={product.id}>
                     <div className='flex items-start'>
                       <Dot className='text-blue-600' />
@@ -32,9 +32,9 @@ export default function Notification({ products }: { products: Product[] }) {
             </ul>
           </ScrollArea>
         </PopoverContent>
-        <Badge variant={'destructive'} className='absolute right-[150px] bottom-[27px]'>
-          {products.length}
-        </Badge>
+        <div className='absolute right-[150px] bottom-[27px] text-sm bg-neutral-100 w-6 h-6 flex items-center justify-center rounded-full'>
+          {products?.length}
+        </div>
       </Popover>
     </>
   );

@@ -32,29 +32,27 @@ export default function LoginForm() {
   };
 
   const onSubmit = async (values: LoginSchemaType) => {
-    try {
-      const { accessToken, refreshToken, status } = await login(values);
+    const { accessToken, refreshToken, status } = await login(values);
 
-      if (status !== 200) {
-        toast({
-          variant: 'destructive',
-          title: 'Đăng nhập thất bại',
-          description: 'Vui lòng kiểm tra lại tên đăng nhập hoặc mật khẩu',
-        });
-        return;
-      }
-
-      await saveToken(accessToken, refreshToken);
-      router.push(URL_DASHBOARD);
-    } catch (error) {
-      console.log(error);
+    if (status !== 200) {
+      toast({
+        variant: 'destructive',
+        title: 'Đăng nhập thất bại',
+        description: 'Vui lòng kiểm tra lại tên đăng nhập hoặc mật khẩu',
+      });
+      return;
     }
+
+    await saveToken(accessToken, refreshToken);
+    router.refresh();
+    router.push(URL_DASHBOARD);
   };
 
   return (
     <>
-      <div className='w-[600px] max-w-full shadow-md bg-white py-[64px] px-[32px]'>
+      <div className='w-[600px] max-w-full shadow-md bg-white py-[60px] px-[32px]'>
         <div className='space-y-4'>
+          <h3 className='font-bold text-center text-3xl pb-3 uppercase'>Đăng nhập</h3>
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit, (error) => {

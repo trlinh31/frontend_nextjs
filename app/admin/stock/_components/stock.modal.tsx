@@ -24,6 +24,7 @@ export default function StockModal({ stock, isOpen, setOpen }: ModalProps) {
     const res = await deleteStock(stock.id);
     if (res !== 200) {
       toast({
+        variant: 'destructive',
         description: 'Xoá phiếu nhập hàng thất bại',
       });
       return;
@@ -55,8 +56,8 @@ export default function StockModal({ stock, isOpen, setOpen }: ModalProps) {
                 <TableRow>
                   <TableHead className='text-center'>STT</TableHead>
                   <TableHead className='text-center'>Tên sản phẩm</TableHead>
-                  <TableHead className='text-center'>Số lượng</TableHead>
                   <TableHead className='text-center'>Giá nhập</TableHead>
+                  <TableHead className='text-center'>Số lượng</TableHead>
                   <TableHead className='text-center'>Thành tiền</TableHead>
                 </TableRow>
               </TableHeader>
@@ -65,8 +66,8 @@ export default function StockModal({ stock, isOpen, setOpen }: ModalProps) {
                   <TableRow key={item.id}>
                     <TableCell>{index + 1}</TableCell>
                     <TableCell>{item.product.name}</TableCell>
-                    <TableCell>{item.quantity}</TableCell>
                     <TableCell>{formatPrice(item.importPrice)}</TableCell>
+                    <TableCell>{item.quantity}</TableCell>
                     <TableCell>{formatPrice(item.total)}</TableCell>
                   </TableRow>
                 ))}

@@ -39,7 +39,7 @@ export default function CustomerForm({ initCustomer }: FormPropsType) {
     const successMessage = initCustomer ? 'Cập nhật khách hàng thành công' : 'Thêm mới khách hàng thành công';
     const res = await createOrUpdateCustomer(data);
     if (res !== 200) {
-      toast({ description: 'Thêm khách hàng thất bại' });
+      toast({ variant: 'destructive', description: 'Thêm khách hàng thất bại' });
       return;
     }
     toast({ description: successMessage });

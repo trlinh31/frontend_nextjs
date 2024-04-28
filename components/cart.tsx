@@ -47,12 +47,17 @@ export default function CartComponent({ isOpen, setOpen }: propsType) {
         })),
       };
       const res = await createTransaction(data);
-      if (res === 200) {
-        cart.removeAllItem();
+      if (res !== 200) {
         toast({
-          description: 'Đơn hàng đang chờ được vận chuyển',
+          variant: 'destructive',
+          description: 'Đặt đơn hàng thất bại',
         });
+        return;
       }
+      cart.removeAllItem();
+      toast({
+        description: 'Đơn hàng đang chờ được vận chuyển',
+      });
     }
   };
 
@@ -63,39 +68,47 @@ export default function CartComponent({ isOpen, setOpen }: propsType) {
           <SheetHeader>
             <SheetTitle>Giỏ Hàng</SheetTitle>
           </SheetHeader>
-          <div className='h-[500px] max-h-[500px] overflow-y-auto'>
-            <ul className='flex flex-col gap-y-6 mt-6'>
-              {cart.items.length > 0 &&
-                cart.items.map((item: { product: Product; quantity: number }) => (
-                  <li key={item.product.id}>
-                    <div className='grid grid-cols-12 gap-x-2'>
-                      <div className='col-span-3'>
-                        <img src={item.product.images[0].name} width={100} height={100} className='object-cover object-top' alt={item.product.name} />
+          <div className='relative w-full h-full'>
+            <div className='h-[500px] max-h-[500px] overflow-y-auto'>
+              <ul className='flex flex-col gap-y-6 mt-6'>
+                {cart.items.length > 0 &&
+                  cart.items.map((item: { product: Product; quantity: number }) => (
+                    <li key={item.product.id}>
+                      <div className='grid grid-cols-12 gap-x-2'>
+                        <div className='col-span-3'>
+                          <img
+                            src={item.product.images[0].name}
+                            width={100}
+                            height={100}
+                            className='object-cover object-top'
+                            alt={item.product.name}
+                          />
+                        </div>
+                        <div className='col-span-8'>
+                          <h3 className='mt-1 text-sm font-semibold text-neutral-900 line-clamp-1'>{item.product.name}</h3>
+                          <h3 className='mt-1 text-sm font-semibold text-neutral-500 line-clamp-1'>x{item.quantity}</h3>
+                          <h3 className='mt-1 text-sm font-semibold text-neutral-900 line-clamp-1'>
+                            <span>Thành tiền:</span> {formatPrice(item.product.price * item.quantity)}
+                          </h3>
+                        </div>
+                        <div className='col-span-1 pt-1'>
+                          <button onClick={() => handleRemoveProductFromCart(item.product.id)}>
+                            <X size={20} />
+                          </button>
+                        </div>
                       </div>
-                      <div className='col-span-8'>
-                        <h3 className='mt-1 text-sm font-semibold text-neutral-900 line-clamp-1'>{item.product.name}</h3>
-                        <h3 className='mt-1 text-sm font-semibold text-neutral-500 line-clamp-1'>x{item.quantity}</h3>
-                        <h3 className='mt-1 text-sm font-semibold text-neutral-900 line-clamp-1'>
-                          <span>Thành tiền:</span> {formatPrice(item.product.price * item.quantity)}
-                        </h3>
-                      </div>
-                      <div className='col-span-1 pt-1'>
-                        <button onClick={() => handleRemoveProductFromCart(item.product.id)}>
-                          <X size={20} />
-                        </button>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-            </ul>
-          </div>
-          <div className='border-t mt-4 pt-3 flex flex-col justify-between'>
-            <div className='flex items-center justify-between'>
-              <h3 className='text-xl font-semibold text-neutral-900'>Tổng tiền:</h3>
-              <h3 className='text-xl font-semibold text-neutral-900'>{formatPrice(cart.getTotalPrice())}</h3>
+                    </li>
+                  ))}
+              </ul>
             </div>
-            <div className='grid pt-4'>
-              <Button onClick={handleSubmit}>Đặt hàng</Button>
+            <div className='border-t mt-4 pt-3 flex flex-col gap-y-4 justify-between absolute bottom-4 left-0 right-0'>
+              <div className='flex items-center justify-between'>
+                <h3 className='text-xl font-semibold text-neutral-900'>Tổng tiền:</h3>
+                <h3 className='text-xl font-semibold text-neutral-900'>{formatPrice(cart.getTotalPrice())}</h3>
+              </div>
+              <div className='grid pt-4'>
+                <Button onClick={handleSubmit}>Đặt hàng</Button>
+              </div>
             </div>
           </div>
         </SheetContent>

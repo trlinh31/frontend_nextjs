@@ -96,7 +96,7 @@ export default function ProductForm({ initProduct, categories }: FormPropsType) 
 
     const res = await createOrUpdateProduct(data);
     if (res !== 200) {
-      toast({ description: 'Thêm sản phẩm thất bại' });
+      toast({ variant: 'destructive', description: 'Thêm sản phẩm thất bại' });
       return;
     }
     toast({ description: successMessage });

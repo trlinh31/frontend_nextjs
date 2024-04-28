@@ -32,7 +32,7 @@ export default function RoleForm({ initRole }: FormPropsType) {
     const successMessage = initRole ? 'Cập nhật vai trò thành công' : 'Thêm mới vai trò thành công';
     const res = await createOrUpdateRole(formData);
     if (res !== 200) {
-      toast({ description: 'Thêm vai trò thất bại' });
+      toast({ variant: 'destructive', description: 'Thêm vai trò thất bại' });
       return;
     }
     toast({ description: successMessage });

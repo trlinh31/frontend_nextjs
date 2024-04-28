@@ -3,11 +3,12 @@ import { decodeToken } from '@/utils/sessionToken';
 import { cookies } from 'next/headers';
 import { ROLE_CASHIER, ROLE_CUSTOMER } from '@/constants/roles';
 import { CASHIER_PATH } from '@/constants/url';
+import { slideToken } from '@/api/auth';
 
 const privatePaths = '/admin';
 const authPaths = ['/login', '/register'];
 
-export async function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest, res: NextResponse) {
   const { pathname } = req.nextUrl;
   const accessToken = cookies().get('accessToken')?.value;
 

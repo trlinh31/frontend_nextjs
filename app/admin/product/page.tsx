@@ -6,19 +6,17 @@ import { Product } from '@/types/product.type';
 
 type paramsProps = {
   searchParams: {
-    [key: string]: string | number;
+    [key: string]: string;
   };
 };
 
 const breadcrumbItem = { title: 'Sản phẩm', link: URL_SHOW_PRODUCT };
 
 export default async function ProductPage({ searchParams }: paramsProps) {
-  let products: Product[] = [];
-  let totalPage = 0;
   const { keyword = '', page = 0 } = searchParams;
-  const { data, totalPages } = await getAllProducts(keyword.toString(), +page);
-  products = data && [...data.filter((item: Product) => item.enable)];
-  totalPage = totalPages;
+  const { data, totalPages } = await getAllProducts(keyword, +page);
+  const products = data && data.filter((item: Product) => item.enable);
+  const totalPage = totalPages;
 
   return (
     <>
