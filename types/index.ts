@@ -4,9 +4,10 @@ export type IconType = LucideIcon;
 
 export interface NavItem {
   title: string;
-  href?: string;
+  href: string;
   disabled?: boolean;
   icon: IconType;
+  role?: string[];
 }
 
 export interface NavItemWithChildren extends NavItem {

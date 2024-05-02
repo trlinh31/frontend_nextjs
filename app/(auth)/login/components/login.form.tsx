@@ -12,9 +12,11 @@ import { saveToken } from '@/utils/sessionToken';
 import { URL_DASHBOARD } from '@/constants/url';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/use-toast';
+import { useAuthStore } from '@/zustand/store';
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const auth = useAuthStore();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -42,9 +44,8 @@ export default function LoginForm() {
       });
       return;
     }
-
+    auth.setRoles(accessToken);
     await saveToken(accessToken, refreshToken);
-    router.refresh();
     router.push(URL_DASHBOARD);
   };
 

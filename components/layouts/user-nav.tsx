@@ -13,10 +13,13 @@ import {
 import { Button } from '@/components/ui/button';
 import { deleteToken } from '@/utils/sessionToken';
 import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/zustand/store';
 
 export default function UserNav({ user }: any) {
+  const auth = useAuthStore();
   const router = useRouter();
   const handleLogout = async () => {
+    auth.resetRoles();
     await deleteToken();
     router.refresh();
     router.push('/login');

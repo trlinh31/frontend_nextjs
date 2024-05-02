@@ -1,3 +1,4 @@
+import { ROLE_ADMIN, ROLE_CASHIER } from '@/constants/roles';
 import {
   URL_DASHBOARD,
   URL_SHOW_CATEGORY,
@@ -14,48 +15,51 @@ import { Home, UsersRound, User, Users, Shirt, ShoppingBag, Store, LayoutGrid, M
 
 export const navItems: NavItem[] = [
   {
-    title: 'Dashboard',
-    href: URL_DASHBOARD,
-    icon: Home,
-  },
-  {
     title: 'Danh mục sản phẩm',
     href: URL_SHOW_CATEGORY,
     icon: LayoutGrid,
+    role: [ROLE_ADMIN],
   },
   {
     title: 'Sản phẩm',
     href: URL_SHOW_PRODUCT,
     icon: Shirt,
+    role: [ROLE_CASHIER],
   },
   {
     title: 'Khách hàng',
     href: URL_SHOW_CUSTOMER,
     icon: UsersRound,
+    role: [ROLE_ADMIN],
   },
   {
     title: 'Đơn hàng',
     href: URL_SHOW_TRANSACTION,
     icon: ShoppingBag,
+    role: [ROLE_CASHIER],
   },
   {
     title: 'Kho hàng',
     href: URL_SHOW_STOCK,
     icon: Store,
+    role: [ROLE_ADMIN],
   },
   {
     title: 'Tài khoản',
     href: URL_SHOW_USER,
     icon: User,
+    role: [ROLE_ADMIN],
   },
   {
     title: 'Vai trò',
     href: URL_SHOW_ROLE,
     icon: KeyRound,
+    role: [ROLE_ADMIN],
   },
   {
     title: 'Nhóm tài khoản',
     href: URL_SHOW_GROUP,
     icon: Users,
+    role: [ROLE_ADMIN],
   },
 ];

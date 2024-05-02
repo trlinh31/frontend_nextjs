@@ -7,7 +7,7 @@ export default function OrderItem({ transaction }: { transaction: any }) {
       <div className='w-full grid grid-cols-12 gap-x-4'>
         <div className='col-span-2'>
           <img
-            src={'/' + transaction.product.images[0].name}
+            src={'/' + transaction.product.images[0]?.name}
             className='object-contain object-top'
             width={200}
             height={300}

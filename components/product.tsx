@@ -43,7 +43,7 @@ export default function ProductItem({ product }: { product: Product }) {
           <div className='flex justify-between'>
             <div>
               <h3 className='mt-1 text-sm font-semibold text-neutral-900 line-clamp-1'>{product.name}</h3>
-              <p className='mt-1 text-sm font-semibold text-neutral-500'>{product.categories[0].name}</p>
+              <p className='mt-1 text-sm font-semibold text-neutral-500'>{product.categories[0]?.name}</p>
             </div>
             <div>
               <h3 className='mt-1 text-sm font-semibold text-neutral-900'>{formatPrice(product.price)}</h3>

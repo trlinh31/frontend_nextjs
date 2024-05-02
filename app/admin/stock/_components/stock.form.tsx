@@ -70,6 +70,8 @@ export default function StockForm({ initStock }: { initStock?: Stock }) {
   };
 
   const handleProductChange = (selectedOption: any) => {
+    console.log(selectedOption);
+
     setSelectedProducts([...selectedProducts, selectedOption]);
     setSearchResults([]);
   };
@@ -146,36 +148,40 @@ export default function StockForm({ initStock }: { initStock?: Stock }) {
           isClearable={false}
           isSearchable
         />
-        <div className='grid grid-cols-12 border-b pb-4 font-bold'>
-          <div className='col-span-1'>Xoá</div>
-          <div className='col-span-3'>Tên sản phẩm</div>
-          <div className='col-span-2'>SL tồn</div>
-          <div className='col-span-2'>Đơn giá</div>
-          <div className='col-span-2'>Số lượng</div>
-          <div className='col-span-2'>Thành tiền</div>
-        </div>
-        {selectedProducts.map((product: any, index: number) => (
-          <div key={id + index} className='grid grid-cols-12'>
-            <div className='col-span-1 flex items-center'>
-              <button onClick={() => handleRemoveProduct(index, Number(initStock?.stockInDetails[index]?.id))}>
-                <Trash2 />
-              </button>
+        {selectedProducts.length > 0 && (
+          <>
+            <div className='grid grid-cols-12 border-b pb-4 font-bold'>
+              <div className='col-span-1'>Xoá</div>
+              <div className='col-span-3'>Tên sản phẩm</div>
+              <div className='col-span-2'>SL tồn</div>
+              <div className='col-span-2'>Đơn giá</div>
+              <div className='col-span-2'>Số lượng</div>
+              <div className='col-span-2'>Thành tiền</div>
             </div>
-            <div className='col-span-3 flex items-center'>{product.label}</div>
-            <div className='col-span-2 flex items-center'>{product.quantity}</div>
-            <div className='col-span-2 flex items-center'>{formatPrice(product.price)}</div>
-            <div className='col-span-2 flex items-center'>
-              <Input
-                type='number'
-                className='w-[100px]'
-                value={product.quantityToBuy || 0}
-                min={0}
-                onChange={(e) => handleQuantityChange(index, Number(e.target.value))}
-              />
-            </div>
-            <div className='col-span-2 flex items-center'>{formatPrice(product.price * product.quantityToBuy)}</div>
-          </div>
-        ))}
+            {selectedProducts.map((product: any, index: number) => (
+              <div key={id + index} className='grid grid-cols-12'>
+                <div className='col-span-1 flex items-center'>
+                  <button onClick={() => handleRemoveProduct(index, Number(initStock?.stockInDetails[index]?.id))}>
+                    <Trash2 />
+                  </button>
+                </div>
+                <div className='col-span-3 flex items-center'>{product.label}</div>
+                <div className='col-span-2 flex items-center'>{product.quantity}</div>
+                <div className='col-span-2 flex items-center'>{formatPrice(product.price)}</div>
+                <div className='col-span-2 flex items-center'>
+                  <Input
+                    type='number'
+                    className='w-[100px]'
+                    value={product.quantityToBuy || 0}
+                    min={0}
+                    onChange={(e) => handleQuantityChange(index, Number(e.target.value))}
+                  />
+                </div>
+                <div className='col-span-2 flex items-center'>{formatPrice(product.price * product.quantityToBuy)}</div>
+              </div>
+            ))}
+          </>
+        )}
       </div>
       <div className='flex items-start justify-between mt-10 gap-x-4'>
         <div className='flex items-center gap-x-4'>
@@ -184,11 +190,13 @@ export default function StockForm({ initStock }: { initStock?: Stock }) {
           </Button>
           <Button onClick={onSubmit}>Lưu</Button>
         </div>
-        <div>
-          <h3 className='font-bold text-2xl'>
-            Tổng tiền: <span>{formatPrice(totalPrice)}</span>
-          </h3>
-        </div>
+        {selectedProducts.length > 0 && (
+          <div>
+            <h3 className='font-bold text-2xl'>
+              Tổng tiền: <span>{formatPrice(totalPrice)}</span>
+            </h3>
+          </div>
+        )}
       </div>
     </>
   );

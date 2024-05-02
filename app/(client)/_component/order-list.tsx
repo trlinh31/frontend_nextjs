@@ -39,7 +39,7 @@ export default function OrderListComponent({ orders }: { orders: Transaction[] }
 
   return (
     <div className='space-y-8'>
-      {orders.map((order: Transaction, orderIndex: number) => (
+      {orders?.map((order: Transaction, orderIndex: number) => (
         <div key={orderIndex} className='space-y-4 border-b pb-4'>
           <p>
             Order Code: {order.code} | Trạng thái: {displayStatus(order.status)} | Tổng thanh toán: {formatPrice(order.billInvoice)}

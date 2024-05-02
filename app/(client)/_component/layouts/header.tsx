@@ -16,7 +16,7 @@ export default function Header() {
   return (
     <>
       <header className='sticky top-0 z-20 bg-neutral-100/50 backdrop-blur-md'>
-        <div className='container w-[1366px]'>
+        <div className='container w-[1366px] max-w-full'>
           <nav className='flex items-center justify-between h-[60px]'>
             <Link href={'/'} className='font-bold text-2xl text-orange-500'>
               Keysoft
