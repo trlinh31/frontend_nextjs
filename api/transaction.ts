@@ -3,6 +3,7 @@ import { revalidateTag } from 'next/cache';
 import { TransactionSchemaType } from '@/lib/form-schema';
 import { cookies } from 'next/headers';
 import { BASE_URL } from '@/api';
+import { decodeToken } from '@/utils/sessionToken';
 
 export const getAllTransactions = async (keyword = '', page = 0) => {
   const url = `${BASE_URL}/transaction/list?keyword=${keyword}&page=${page}`;
@@ -116,7 +117,7 @@ export const receivedTransaction = async (id: string) => {
   } catch (error) {
     console.error(error);
   } finally {
-    revalidateTag('transactions');
+    revalidateTag('orders');
   }
 };
 
@@ -138,8 +139,9 @@ export const deleteTransaction = async (id: string) => {
   }
 };
 
-export const getOrderHistory = async (username: string) => {
-  const url = `${BASE_URL}/transaction/order?username=${username}`;
+export const getOrderHistory = async () => {
+  const user = decodeToken(cookies().get('accessToken')?.value ?? '');
+  const url = `${BASE_URL}/transaction/order?username=${user?.sub}`;
   try {
     const response = await fetch(url, {
       method: 'GET',
@@ -147,6 +149,7 @@ export const getOrderHistory = async (username: string) => {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${cookies().get('accessToken')?.value}`,
       },
+      next: { tags: ['orders'] },
     });
     const order = await response.json();
     return { data: order };

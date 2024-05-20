@@ -32,10 +32,10 @@ export default function ConfirmDialog({ isOpen, setOpen, idTransaction }: Confir
       return;
     }
     setOpen(false);
-    router.refresh();
     toast({
       description: 'Xác nhận đơn hàng thành công',
     });
+    router.refresh();
   };
 
   return (

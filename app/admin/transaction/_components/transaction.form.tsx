@@ -68,10 +68,10 @@ export default function TransactionForm() {
       if (data) {
         const productOptions = data
           .filter((item: Product) => !selectedProducts.some((product: any) => product.value === item.id) && item.quantity > 0)
-          .map(({ id, name, importPrice, quantity }: any) => ({
+          .map(({ id, name, price, quantity }: any) => ({
             value: id,
             label: name,
-            price: importPrice,
+            price: price,
             quantity,
             quantityToBuy: 0,
           }));

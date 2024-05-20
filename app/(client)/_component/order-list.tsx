@@ -39,30 +39,34 @@ export default function OrderListComponent({ orders }: { orders: Transaction[] }
 
   return (
     <div className='space-y-8'>
-      {orders?.map((order: Transaction, orderIndex: number) => (
-        <div key={orderIndex} className='space-y-4 border-b pb-4'>
-          <p>
-            Order Code: {order.code} | Trạng thái: {displayStatus(order.status)} | Tổng thanh toán: {formatPrice(order.billInvoice)}
-          </p>
-          <div className='grid grid-cols-6'>
-            <div className='col-span-5'>
-              {order.transactionDetails.map((item: any, itemIndex: number) => (
-                <div key={itemIndex} className='mb-4'>
-                  <OrderItem transaction={item} />
-                  {order.status === 3 && (
-                    <Button variant={'ghost'} onClick={() => handleShowRatingModal(item.product.id)} className='mt-4'>
-                      Đánh giá sản phẩm
-                    </Button>
-                  )}
-                </div>
-              ))}
-            </div>
-            <div className='col-span-1'>
-              {order.status === 2 && <Button onClick={() => handleShowConfirmDialog(order.id)}>Đã nhận được hàng</Button>}
+      {orders.length > 0 ? (
+        orders?.map((order: Transaction, orderIndex: number) => (
+          <div key={orderIndex} className='space-y-4 border-b pb-4'>
+            <p>
+              Order Code: {order.code} | Trạng thái: {displayStatus(order.status)} | Tổng thanh toán: {formatPrice(order.billInvoice)}
+            </p>
+            <div className='grid grid-cols-6'>
+              <div className='col-span-5'>
+                {order.transactionDetails.map((item: any, itemIndex: number) => (
+                  <div key={itemIndex} className='mb-4'>
+                    <OrderItem transaction={item} />
+                    {order.status === 3 && (
+                      <Button variant={'ghost'} onClick={() => handleShowRatingModal(item.product.id)} className='mt-4'>
+                        Đánh giá sản phẩm
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <div className='col-span-1'>
+                {order.status === 2 && <Button onClick={() => handleShowConfirmDialog(order.id)}>Đã nhận được hàng</Button>}
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))
+      ) : (
+        <h1 className='font-bold text-3xl text-center'>Bạn chưa có đơn hàng nào</h1>
+      )}
       <ConfirmDialog isOpen={isOpen} setOpen={setOpen} idTransaction={idTransaction} />
       <Rating isOpen={isOpenRatingModal} setOpen={setOpenRatingModal} idProduct={idProduct} />
     </div>

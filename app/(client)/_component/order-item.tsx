@@ -1,4 +1,3 @@
-'use client';
 import { formatPrice } from '@/utils/formatPrice';
 
 export default function OrderItem({ transaction }: { transaction: any }) {
